@@ -106,7 +106,7 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
    - Ela utiliza o Firebase para criar um novo usuário ou realizar login e retornar uma resposta de sucesso ou erro.
   
 ###Mockups : Isto é o MVP efectuado em figma do resultado que se pretende alcançar
-![imagem 1 ](mockups/Captura de ecrã 2024-11-15 003446.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003446.png)
 
 ## Contribuições
 
