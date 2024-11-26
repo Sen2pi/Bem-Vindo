@@ -43,6 +43,12 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    val credentialsManagerVersion = "1.5.0-alpha05"
+    implementation("androidx.credentials:credentials:$credentialsManagerVersion")
+    implementation("androidx.credentials:credentials-play-services-auth:$credentialsManagerVersion")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
