@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -69,10 +73,6 @@ fun PaginaDeRegistro(navController: NavController) {
             errors[5] = "Le Code Postal doit avoir le format XXXX-XXX."
         }
 
-        // Validação do Email
-        if (!Patterns.EMAIL_ADDRESS.matcher(valores[6]).matches()) {
-            errors[6] = "Email invalide."
-        }
 
         // Validação da Senha (mínimo de 8 caracteres, uma letra minúscula e uma maiúscula)
         val password = valores[8]
@@ -106,6 +106,14 @@ fun PaginaDeRegistro(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .alpha(0.60f)
+        )
+        Image(
+            painter = painterResource(id = R.mipmap.logo2),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.BottomCenter,
+            modifier = Modifier
+                .fillMaxSize()
         )
 
         Column(
@@ -199,6 +207,29 @@ fun PaginaDeRegistro(navController: NavController) {
                 Text(
                     text = "S'enregistrer",
                     fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(
+                onClick = { navController.navigate("login") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00405A),
+                    contentColor = Color.White
+            )
+            ) {
+                // Ícone de retorno
+                Icon(
+                    imageVector = Icons.Rounded.Close, // Ícone de fechamento
+                    contentDescription = "Retourner à la page de connexion",
+                    modifier = Modifier.padding(end = 8.dp) // Espaço entre o ícone e o texto
+                )
+                // Texto do botão com a cor especificada
+                Text(
+                    text = "Retourner",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White, // Cor personalizada
+
                 )
             }
 

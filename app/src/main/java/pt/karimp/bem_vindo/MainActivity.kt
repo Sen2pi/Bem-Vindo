@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BemvindoTheme {
-                Navegacao() // Inicia a navegação principal
+                Navegacao()
             }
         }
     }
