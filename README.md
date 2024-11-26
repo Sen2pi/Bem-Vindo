@@ -55,7 +55,7 @@ Antes de executar o projeto, você precisará das seguintes ferramentas instalad
 1. **Clonar o repositório**:
    - Abra o terminal e clone o repositório:
      ```bash
-     git clone [https://github.com/seu_usuario/seu_repositorio.git](https://github.com/Sen2pi/Bem-Vindo.git)
+     git clone https://github.com/Sen2pi/Bem-Vindo.git
      ```
 
 2. **Configurar Firebase**:
@@ -104,6 +104,9 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 3. **Lógica de Autenticação (`AuthenticationManager`)**:
    - A classe `AuthenticationManager` contém funções para login e registro com email e senha usando o Firebase Authentication.
    - Ela utiliza o Firebase para criar um novo usuário ou realizar login e retornar uma resposta de sucesso ou erro.
+  
+###Mockups : Isto é o MVP efectuado em figma do resultado que se pretende alcançar
+![imagem 1 ](caminho/para/sua/imagem.png)
 
 ## Contribuições
 
