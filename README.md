@@ -107,6 +107,24 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
   
 ###Mockups : Isto é o MVP efectuado em figma do resultado que se pretende alcançar
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003446.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003506.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003519.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003542.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003552.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003603.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003619.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003637.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003647.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003707.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003725.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003736.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003744.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003755.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003812.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003823.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003832.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003846.png)
+![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003855.png)
 
 ## Contribuições
 
