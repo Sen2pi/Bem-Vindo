@@ -48,6 +48,14 @@ fun PaginaDeLogin(navController: NavController) {
                 .fillMaxSize()
                 .alpha(0.60f)
         )
+        Image(
+            painter = painterResource(id = R.mipmap.logo2),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.BottomCenter,
+            modifier = Modifier
+                .fillMaxSize()
+        )
 
         // Conteúdo da página
         Column(
@@ -66,7 +74,21 @@ fun PaginaDeLogin(navController: NavController) {
                 leadingIcon = {
                     Icon(imageVector = Icons.Rounded.Email, contentDescription = null)
                 },
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF00405A), // Background when focused
+                    unfocusedContainerColor = Color(0xFF00405A),  // Background when not focused
+                    focusedBorderColor = Color.DarkGray,    // Border color when focused
+                    unfocusedBorderColor = Color.LightGray, // Border color when not focused
+                    focusedTextColor = Color.White,         // Text color when focused
+                    unfocusedTextColor = Color.White,        // Text color when not focuse
+                    focusedLeadingIconColor = Color.White,    // Leading icon color when focused
+                    unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
+                    focusedTrailingIconColor = Color.White,   // Optional: Customize trailing icon color
+                    unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White,      // Text color when not focused
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -74,17 +96,34 @@ fun PaginaDeLogin(navController: NavController) {
             OutlinedTextField(
                 value = senha,
                 onValueChange = { senha = it },
-                label = { Text("Mot de Pass") },
+                label = { Text(
+                    text = "Mot de Pass",
+
+                    ) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 leadingIcon = {
                     Icon(imageVector = Icons.Rounded.Lock, contentDescription = null)
                 },
                 visualTransformation = PasswordVisualTransformation(),
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF00405A), // Background when focused
+                    unfocusedContainerColor = Color(0xFF00405A),  // Background when not focused
+                    focusedBorderColor = Color.DarkGray,    // Border color when focused
+                    unfocusedBorderColor = Color.LightGray, // Border color when not focused
+                    focusedTextColor = Color.White,         // Text color when focused
+                    unfocusedTextColor = Color.White,        // Text color when not focuse
+                    focusedLeadingIconColor = Color.White,    // Leading icon color when focused
+                    unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
+                    focusedTrailingIconColor = Color.White,   // Optional: Customize trailing icon color
+                    unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                )
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             Button(
                 onClick = {
@@ -100,9 +139,14 @@ fun PaginaDeLogin(navController: NavController) {
                         }.launchIn(coroutineScope)
 
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00405A), // Background color of the button
+                    contentColor = Color.White          // Text/Icon color inside the button
+                ),
                 modifier = Modifier
                     .height(50.dp),
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(14.dp),
+
             ) {
                 Text(
                     text = "Se Connecter",
@@ -115,6 +159,10 @@ fun PaginaDeLogin(navController: NavController) {
 
             Button(
                 onClick = { navController.navigate("register") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00405A), // Background color of the button
+                    contentColor = Color.White          // Text/Icon color inside the button
+                ),
                 modifier = Modifier
                     .height(50.dp),
                 shape = RoundedCornerShape(14.dp)
