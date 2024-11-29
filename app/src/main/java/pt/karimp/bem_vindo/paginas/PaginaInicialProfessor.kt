@@ -9,22 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import pt.karimp.bem_vindo.R
 
 @Composable
-fun PaginaInicial() {
+fun PaginaInicialProfessor(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
 
     ) {
         Text(
-            text = "Bienvenue à la page principale!",
+            text = "Bienvenue à la page principale PROFESSEUR!",
             style = MaterialTheme.typography.headlineMedium
         )
         Image(
-            painter = painterResource(id = pt.karimp.bem_vindo.R.mipmap.azulejo1),
+            painter = painterResource(id = R.mipmap.azulejo1),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

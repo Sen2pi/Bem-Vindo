@@ -13,6 +13,8 @@ fun Navegacao() {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { PaginaDeLogin(navController) }
         composable("register") { PaginaDeRegistro(navController) }
-        composable("home") { PaginaInicial() }
+        composable("homeProfessor") { PaginaInicialProfessor(navController) }
+        composable("homeAluno") { PaginaInicialAluno(navController) }
     }
 }
+

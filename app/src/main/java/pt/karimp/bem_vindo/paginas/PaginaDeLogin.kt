@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.auth.AuthResponse
 import pt.karimp.bem_vindo.auth.AuthenticationManager
+import pt.karimp.bem_vindo.auth.verificaTipoUsuario
 
 @Composable
 fun PaginaDeLogin(navController: NavController) {
@@ -127,26 +127,20 @@ fun PaginaDeLogin(navController: NavController) {
 
             Button(
                 onClick = {
-
-                        authenticationManager.loginComEmail(email, senha).onEach { response ->
-                            if (response is AuthResponse.Success) {
-                                navController.navigate("home") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            } else {
-                                errorMessage = "Email ou mot de pass erronés! Inserez des identifiants valides."
-                            }
-                        }.launchIn(coroutineScope)
-
+                    authenticationManager.loginComEmail(email, senha).onEach { response ->
+                        if (response is AuthResponse.Success) {
+                            verificaTipoUsuario(navController, email)
+                        } else {
+                            errorMessage = "Email ou mot de passe erroné! Insérez des identifiants valides."
+                        }
+                    }.launchIn(coroutineScope)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00405A), // Background color of the button
-                    contentColor = Color.White          // Text/Icon color inside the button
+                    containerColor = Color(0xFF00405A),
+                    contentColor = Color.White
                 ),
-                modifier = Modifier
-                    .height(50.dp),
-                shape = RoundedCornerShape(14.dp),
-
+                modifier = Modifier.height(50.dp),
+                shape = RoundedCornerShape(14.dp)
             ) {
                 Text(
                     text = "Se Connecter",
@@ -154,6 +148,7 @@ fun PaginaDeLogin(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
