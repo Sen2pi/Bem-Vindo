@@ -10,11 +10,16 @@ import androidx.navigation.compose.rememberNavController
 fun Navegacao() {
     val navController: NavHostController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "homeAluno") {
         composable("login") { PaginaDeLogin(navController) }
         composable("register") { PaginaDeRegistro(navController) }
         composable("homeProfessor") { PaginaInicialProfessor(navController) }
         composable("homeAluno") { PaginaInicialAluno(navController) }
+        composable("agenda") { Agenda(navController) }
+        composable("notas") { Notas(navController) }
+        composable("chat") { Chat(navController) }
+        composable("aprender") { Aprender(navController) }
+        composable("profile") { Profile(navController) }
     }
 }
 
