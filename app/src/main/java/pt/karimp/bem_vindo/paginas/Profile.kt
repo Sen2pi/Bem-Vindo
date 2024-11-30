@@ -139,7 +139,7 @@ fun Profile(navController: NavController) {
                     // Editable Profile Information
                     userData?.let { user ->
                         Text(
-                            text = "Perfil do Usuário",
+                            text = "Profil",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
@@ -203,12 +203,69 @@ fun Profile(navController: NavController) {
                         )
                         // Edit and Save Button
                         Row {
+                            val context = LocalContext.current
+                            fun saveUserData(user: User) {
+                                val db = FirebaseFirestore.getInstance()
+                                val userEmail = FirebaseAuth.getInstance().currentUser?.email
+
+                                if (userEmail != null) {
+                                    db.collection("users")
+                                        .whereEqualTo("email", userEmail) // Encontra o documento do usuário logado
+                                        .get()
+                                        .addOnSuccessListener { querySnapshot ->
+                                            val document = querySnapshot.documents.firstOrNull()
+                                            if (document != null) {
+                                                // Atualiza os campos no Firestore
+                                                document.reference.update(
+                                                    mapOf(
+                                                        "nome" to user.nome,
+                                                        "morada" to user.morada,
+                                                        "codigoPostal" to user.codigoPostal,
+                                                        "cidade" to user.cidade,
+                                                        "nif" to user.nif,
+                                                        "nss" to user.nss,
+                                                        "telefone" to user.telefone,
+                                                        "email" to user.email
+                                                    )
+                                                ).addOnSuccessListener {
+                                                    // Feedback para o utilizador
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Dados atualizados com sucesso!",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }.addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Erro ao atualizar dados!",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            } else {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Erro: Documento do usuário não encontrado!",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(
+                                                context,
+                                                "Erro ao acessar o Firestore!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                } else {
+                                    Toast.makeText(context, "Usuário não logado!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                             Button(onClick = { isEditing = !isEditing }) {
                                 Text(text = if (isEditing) "Cancelar" else "Editar")
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             if (isEditing) {
-                                Button(onClick = { saveUserData() }) {
+                                Button(onClick = { saveUserData(user) }) {
                                     Text(text = "Salvar")
                                 }
                             }
@@ -247,7 +304,7 @@ fun Profile(navController: NavController) {
                     title = { Text("Confirmar exclusão") },
                     text = { Text("Você tem certeza de que deseja excluir sua conta?") },
                     confirmButton = {
-                        TextButton(onClick = { deleteUser() }) {
+                        TextButton(onClick = { deleteUser(navController) }) {
                             Text("Confirmar")
                         }
                     },
@@ -279,7 +336,7 @@ fun Profile(navController: NavController) {
 
 
 
-fun deleteUser() {
+fun deleteUser(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     user?.delete()?.addOnSuccessListener {
@@ -291,16 +348,16 @@ fun deleteUser() {
             .addOnSuccessListener { querySnapshot ->
                 querySnapshot.documents.firstOrNull()?.reference?.delete()
             }
+        // Sign out the user and navigate to the login page
         auth.signOut()
-        // Navigate to login screen or show a confirmation
+        navController.navigate("login") {
+            // Clear the back stack to prevent returning to deleted user pages
+            popUpTo(0)
+        }
+    }?.addOnFailureListener {
+        // Handle failure case (optional feedback)
+        println("Failed to delete user.")
     }
-}
-
-fun saveUserData() {
-    // Save updated user data in Firestore
-    val db = FirebaseFirestore.getInstance()
-    val userData = User() // Assume that updated userData is available
-    db.collection("users").document(userData.email).set(userData)
 }
 
 data class User(
