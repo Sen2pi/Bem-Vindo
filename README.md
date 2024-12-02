@@ -2,6 +2,60 @@
 
 Este projeto consiste no desenvolvimento de uma aplicação Android utilizando Kotlin e Jetpack Compose, com integração ao Firebase para gerenciamento de autenticação de usuários. A aplicação permite que os usuários se registrem e façam login utilizando email e senha.  permite aos Usuários aprender uma nova lingua para o pais que emigram. Neste caso Português.
 
+## Funcionalidades
+
+### Funcionalidades Desejadas
+- Registro de usuários com validação de campos detalhada (Nome, NIF, etc.).
+- Login seguro com email e senha.
+- Recuperação de senha via email.
+- Opcional : Apagar a conta de usuário
+- Interface de chat com tutor, incluindo envio de mensagens e áudios.
+- Página para confirmação de presença nas aulas, com funcionalidades de:
+  - Visualização das próximas aulas.
+  - Ajuste de horários de preferência.
+  - Cancelamento de aulas.
+  - Confirmar a presença
+- Suporte a notificações push para lembrar os usuários sobre aulas e mensagens.
+- Feedback e avaliação em tempo real durante interações com tutores.
+- Jogos de Aprendizagem interativos.
+- Sistemas de notas e progresso e niveis
+
+### Funcionalidades do MVP
+- Registro de usuários com email e senha.
+- Login com validação básica (email e senha).
+- Validações de formulário para:
+  - Campos obrigatórios.
+  - Formato de email.
+  - Complexidade mínima da senha.
+- Integração com Firebase Authentication.
+- Integração com Firestore
+- Interface básica e funcional para login e registro usando Jetpack Compose.
+- Página Inicial com o Dashboard
+- Página de Chat com o Tutor
+- Página de Agenda
+
+### Funcionalidades Implementadas
+- Tela de login funcional com validação de email e senha.
+- Tela de registro funcional com validações de:
+  - Formato de email.
+  - Formato de NIF.
+  - Formato de NSS
+  - Formato de Palavra-Pass
+  - Senha com complexidade 8 char mais Maiúscula e minúscula pelo menos.
+- Integração com Firebase Authentication e FireStore para:
+  - Registro de usuários.
+  - Login com autenticação.
+- Página inicial simples após login bem-sucedido.
+- Dashboard 90% completo ( Falta o Like no proverbio diario)
+  - Informações do Tutor
+  - Informações do Progresso
+  - Proverbio do dia
+- Página de Perfil
+  - Com opção de editar campos
+  - Com opção de apagar a conta
+  - com a opção de solicitar envio de email de mudança de password.
+- Chat a 90% falta o envio de Audio.
+
 ## Tecnologias Utilizadas
 
 - **Kotlin**: Linguagem de programação principal.
