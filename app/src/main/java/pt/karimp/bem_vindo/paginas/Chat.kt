@@ -202,7 +202,7 @@ fun Chat(navController: NavController) {
                 .padding(innerPadding)
                 .padding(5.dp)
                 .background(
-                    color = Color(0xFF005B7F), // Cor verde água
+                    color = Color(0xFFA1B8CC), // Cor verde água
                     shape = RoundedCornerShape(32.dp), // Cantos arredondados
 
                 )

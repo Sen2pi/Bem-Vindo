@@ -248,7 +248,7 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF005B7F))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFA1B8CC))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -264,14 +264,14 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.mipmap.logo2),
+                    painter = painterResource(id = R.mipmap.ic_professor),
                     contentDescription = "Tutor Image",
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(100.dp)
                 )
                 Column {
-                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyMedium, color = Color.White)
-                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyMedium, color = Color.White)
-                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge, color = Color.White)
                 }
             }
         }

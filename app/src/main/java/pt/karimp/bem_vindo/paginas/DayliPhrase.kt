@@ -84,7 +84,7 @@ fun DailyPhrase(title: String, chosenLanguage: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF005B7F))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFA1B8CC))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -92,12 +92,12 @@ fun DailyPhrase(title: String, chosenLanguage: String) {
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         color = Color.White
             )
             Text(
                 text = "${fraseDoDia?.frase}",
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic),
+                style = MaterialTheme.typography.bodyLarge.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic),
                 color = Color.White
             )
             Text(
@@ -106,7 +106,7 @@ fun DailyPhrase(title: String, chosenLanguage: String) {
                 else if(chosenLanguage =="pt"){ "${fraseDoDia?.definicaoPt}"}
                 else if(chosenLanguage =="en"){ "${fraseDoDia?.definicaoEn}"}
                 else{"${fraseDoDia?.definicaoEs}"},
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic),
+                style = MaterialTheme.typography.bodyLarge.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic),
                 color = Color.White
             )
         }

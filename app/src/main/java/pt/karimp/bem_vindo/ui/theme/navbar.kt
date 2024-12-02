@@ -19,7 +19,7 @@ import pt.karimp.bem_vindo.R // Certifique-se de usar o caminho correto para o r
 @Composable
 fun BottomNavBar(navController: NavController) {
     NavigationBar(
-        containerColor = Color(0xFF005B7F), // Azul inspirado nos azulejos portugueses
+        containerColor = Color(0xFFA1B8CC), // Azul inspirado nos azulejos portugueses
     ) {
 
         // Search
