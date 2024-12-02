@@ -147,6 +147,10 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 - **`src/main/java/pt/karimp/bem_vindo/`**: Contém as atividades, páginas e lógica do aplicativo.
   - **`paginas/`**: Contém as páginas da aplicação, como o login e registro.
   - **`auth/`**: Contém a lógica de autenticação com Firebase.
+  - **`models/`**: Contém a lógica dos modelos para a base de dados ( para já FireStore).
+  - **`API/`**: Contém a lógica da API.
+  - **`utils/`**: Contém a lógica dos utilitários por exemplo o formatador de datas.
+  - **`ui.theme/`**: Contém todos os temas da app incluindo a navbar.
 - **`res/`**: Contém os recursos do aplicativo, como imagens e layouts.
 
 ## Como Funciona o Código
