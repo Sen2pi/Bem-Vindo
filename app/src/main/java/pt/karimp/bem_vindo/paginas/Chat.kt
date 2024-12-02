@@ -34,8 +34,10 @@ import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import android.media.MediaPlayer
 import androidx.compose.animation.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import pt.karimp.bem_vindo.models.Message
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -54,36 +56,39 @@ fun Chat(navController: NavController) {
     var professorData by remember { mutableStateOf<User?>(null) }
     var currentUserDocumentId by remember { mutableStateOf("") }
     var professorDocumentId by remember { mutableStateOf("") }
-    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
-    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
-
-    // Função para carregar mensagens do Firestore
+    var selectedLanguage by remember { mutableStateOf("fr") }
+    val translations = getTranslations(selectedLanguage)
+    val lazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     suspend fun loadMessages(db: FirebaseFirestore, currentUserId: String) {
         try {
-            // Buscar as mensagens enviadas pelo usuário atual
+
             val sentMessagesQuery = db.collection("messages")
                 .whereEqualTo("fromUserId", currentUserId)
                 .get().await()
 
-            // Buscar as mensagens recebidas pelo usuário atual
+
             val receivedMessagesQuery = db.collection("messages")
                 .whereEqualTo("toUserId", currentUserId)
                 .get().await()
 
-            // Combinar as duas listas de mensagens
+
             val allMessages = mutableListOf<Message>()
 
-            // Mapear as mensagens enviadas
+
             allMessages.addAll(sentMessagesQuery.documents.map { document ->
                 document.toObject(Message::class.java) ?: Message()
             })
-            // Mapear as mensagens recebidas
+
             allMessages.addAll(receivedMessagesQuery.documents.map { document ->
                 document.toObject(Message::class.java) ?: Message()
             })
-            // Ordenar as mensagens por timestamp
+
             messages = allMessages.sortedBy { it.timestamp }
 
+            coroutineScope.launch {
+                lazyListState.scrollToItem(messages.size - 1)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -209,6 +214,7 @@ fun Chat(navController: NavController) {
         ) {
             LazyColumn(
                 modifier = Modifier.weight(1f),
+                state = lazyListState,
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -247,7 +253,7 @@ fun Chat(navController: NavController) {
                                 } else {
                                     "${professorData?.nome}"
                                 },
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                                 color = Color.White.copy(alpha = 0.7f),
                                 modifier = Modifier
                                     .padding(bottom = 4.dp)
@@ -267,10 +273,10 @@ fun Chat(navController: NavController) {
                                 if (message.fromUserId != currentUserDocumentId) {
                                     // Ícone à esquerda para mensagens do professor
                                     Icon(
-                                        imageVector = Icons.Default.AccountCircle, // Ícone de usuário
+                                        painter = painterResource(id =R.mipmap.ic_professor), // Ícone de usuário
                                         contentDescription = "Usuário",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(20.dp) // Tamanho do ícone
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(50.dp) // Tamanho do ícone
                                     )
 
                                     Spacer(modifier = Modifier.width(8.dp)) // Espaço entre o ícone e o texto
@@ -279,7 +285,7 @@ fun Chat(navController: NavController) {
                                 // Texto da mensagem
                                 Text(
                                     text = message.message,
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                                     color = Color.White,
                                     modifier = Modifier.weight(1f) // O texto ocupa o espaço restante
                                 )
@@ -288,10 +294,10 @@ fun Chat(navController: NavController) {
                                     // Ícone à direita para mensagens do usuário
                                     Spacer(modifier = Modifier.width(8.dp)) // Espaço entre o texto e o ícone
                                     Icon(
-                                        imageVector = Icons.Default.AccountCircle, // Ícone de usuário
+                                        painter = painterResource(id =R.mipmap.ic_aluno), // Ícone de usuário
                                         contentDescription = "Usuário",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(20.dp) // Tamanho do ícone
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(50.dp) // Tamanho do ícone
                                     )
                                 }
                             }
@@ -299,7 +305,7 @@ fun Chat(navController: NavController) {
                             // Data e hora da mensagem
                             Text(
                                 text = formatTimestamp(message.timestamp),
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp
                             )
