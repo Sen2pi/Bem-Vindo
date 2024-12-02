@@ -176,27 +176,38 @@ fun PaginaDeRegistro(navController: NavController) {
                                     codigoPostal = valores[5],
                                     telemovel = valores[6],
                                     email = valores[7],
-                                    password = valores[8]
+                                    password = valores[8],
+                                    progresso = 0
                                 ).onEach { response ->
                                     if (response is AuthResponse.Success) {
-                                        firestore.collection("users").add(
-                                            hashMapOf(
-                                                "nome" to valores[0],
-                                                "nss" to valores[1],
-                                                "nif" to valores[2],
-                                                "morada" to valores[3],
-                                                "cidade" to valores[4],
-                                                "codigoPostal" to valores[5],
-                                                "telefone" to valores[6],
-                                                "email" to valores[7],
-                                                "tipo" to "Aluno",// Sempre "Aluno"
-                                                "progresso" to 0,
-                                                "nivel" to "Básico"
+                                        firestore.collection("users")
+                                            .add(
+                                                hashMapOf(
+                                                    "nome" to valores[0],
+                                                    "nss" to valores[1],
+                                                    "nif" to valores[2],
+                                                    "morada" to valores[3],
+                                                    "cidade" to valores[4],
+                                                    "codigoPostal" to valores[5],
+                                                    "telefone" to valores[6],
+                                                    "email" to valores[7],
+                                                    "tipo" to "Aluno", // Sempre "Aluno"
+                                                    "progresso" to 0,
+                                                    "nivel" to "Básico",
+                                                    "professor" to "aSyWDvIyEM8zUlUWaXAF"
+                                                )
                                             )
-                                        )
-                                        navController.navigate("home") {
-                                            popUpTo("register") { inclusive = true }
-                                        }
+                                            .addOnSuccessListener {
+                                                // Dados salvos com sucesso
+                                                navController.navigate("login") {
+                                                    popUpTo("register") { inclusive = true }
+                                                }
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                // Erro ao salvar dados
+                                                errorMessage = "Erro ao salvar dados no Firestore: ${exception.message}"
+                                            }
+
                                     } else {
                                         errorMessage = "Erro ao criar conta. Tente novamente."
                                     }

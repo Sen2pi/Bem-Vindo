@@ -19,7 +19,8 @@ public class AuthenticationManager {
         codigoPostal: String,
         telemovel: String,
         email: String,
-        password: String
+        password: String,
+        progresso: Int
     ): Flow<AuthResponse> =
         callbackFlow {
             auth.createUserWithEmailAndPassword(email, password)
