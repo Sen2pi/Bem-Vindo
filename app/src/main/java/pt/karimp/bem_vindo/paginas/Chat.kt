@@ -34,9 +34,7 @@ import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import android.media.MediaPlayer
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
+import pt.karimp.bem_vindo.models.Message
 import androidx.compose.ui.graphics.Color
 
 
@@ -372,15 +370,6 @@ fun formatTimestamp(timestamp: Timestamp): String {
     )
     return sdf.format(timestamp.toDate())
 }
-
-data class Message(
-    val fromUserId: String = "",
-    val toUserId: String = "",
-    val message: String = "",
-    val type: String = "text",
-    val timestamp: Timestamp = Timestamp.now(),
-    val read: Boolean = false
-)
 
 fun sendMessage(
     db: FirebaseFirestore,

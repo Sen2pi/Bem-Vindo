@@ -1,8 +1,12 @@
 package pt.karimp.bem_vindo.paginas
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,15 +18,66 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
+
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
+import pt.karimp.bem_vindo.models.User
 
 @Composable
 fun PaginaInicialAluno(navController: NavController) {
+    val auth = FirebaseAuth.getInstance()
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
     val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    var userData by remember { mutableStateOf<User?>(null) }
+    var professorData by remember { mutableStateOf<User?>(null) }
+    var currentUserDocumentId by remember { mutableStateOf("") }
+    var professorDocumentId by remember { mutableStateOf("") }
+    val currentUser = auth.currentUser
+    val userEmail = FirebaseAuth.getInstance().currentUser?.email
+    val db = FirebaseFirestore.getInstance()
+    var loading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var isEditing by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(Unit) {
+        try {
+            val userDocSnapshot =
+                db.collection("users").whereEqualTo("email", userEmail).get().await()
+
+            if (!userDocSnapshot.isEmpty) {
+                val userDoc = userDocSnapshot.documents.first()
+                userData = userDoc.toObject(User::class.java)
+                currentUserDocumentId = userDoc.id
+                professorDocumentId = userDoc.getString("professor") ?: ""
+            }
+        } catch (e: Exception) {
+            Log.e("FirestoreDebug", "Erro ao carregar usuário: ${e.message}")
+        }
+    }
+
+    LaunchedEffect(professorDocumentId) {
+        try {
+            val documentSnapshot = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(professorDocumentId)
+                .get()
+                .await()
+
+            if (documentSnapshot.exists()) {
+                professorData = documentSnapshot.toObject(User::class.java)
+            } else {
+                error = "Usuário não encontrado"
+            }
+        } catch (e: Exception) {
+            Log.e("FirestoreDebug", "Erro ao carregar professor: ${e.message}")
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomNavBar(navController = navController) },
@@ -92,20 +147,21 @@ fun PaginaInicialAluno(navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.size(50.dp))
                 // Progress Section
-                ProgressSection(progress = 50, title = translations["progress_title"]!!)
+                ProgressSection(progress = userData?.progresso ?: 0, title = translations["progress_title"]!!, nivel = userData?.nivel
+                    ?: "")
 
                 // Tutor Section
                 TutorSection(
                     title = translations["tutor_title"]!!,
-                    tutorName = "Karim Santos",
-                    city = "Braga",
-                    email = "karim@exemplo.com"
+                    tutorName = "${professorData?.nome}",
+                    city = "${professorData?.cidade}",
+                    email = "${professorData?.email}"
                 )
 
                 // Daily Phrase Section
                 DailyPhrase(
                     title = translations["daily_phrase_title"]!!,
-                    phrase = translations["daily_phrase"]!!
+                    chosenLanguage = selectedLanguage
                 )
             }
         }
@@ -113,7 +169,7 @@ fun PaginaInicialAluno(navController: NavController) {
 }
 
 @Composable
-fun ProgressSection(progress: Int, title: String) {
+fun ProgressSection(progress: Int, title: String, nivel: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,8 +178,9 @@ fun ProgressSection(progress: Int, title: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 8.dp)
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 8.dp),
+            color = Color(0xFF005B7F)
         )
         LinearProgressIndicator(
             progress = progress / 100f,
@@ -136,8 +193,53 @@ fun ProgressSection(progress: Int, title: String) {
         Text(
             text = "$progress%",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp),
+            color = Color(0xFF005B7F)
         )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            when (nivel) {
+                "Básico" -> Image(
+                    painter = painterResource(id = R.mipmap.ic_basico), // Exemplo com o ícone customizado
+                    contentDescription = "Básico",
+                    modifier = Modifier.size(50.dp)
+                )
+                "Iniciante" -> Image(
+                    painter = painterResource(id = R.mipmap.ic_iniciante),
+                    contentDescription = "Iniciante",
+                    modifier = Modifier.size(50.dp)
+                )
+                "Avançado" -> Image(
+                    painter = painterResource(id = R.mipmap.ic_advanced), // Exemplo
+                    contentDescription = "Avançado",
+                    modifier = Modifier.size(50.dp)
+                )
+                "Nivel Mundial" -> Image(
+                    painter = painterResource(id = R.mipmap.ic_mundial), // Exemplo
+                    contentDescription = "Nivel Mundial",
+                    modifier = Modifier.size(50.dp)
+                )
+                "Profissional" -> Image(
+                    painter = painterResource(id = R.mipmap.professional_foreground), // Exemplo
+                    contentDescription = "Profissional",
+                    modifier = Modifier.size(50.dp)
+                )
+                else -> Image(
+                    painter = painterResource(id = R.mipmap.ic_basico), // Caso o nível não seja reconhecido
+                    contentDescription = "Desconhecido",
+                    modifier = Modifier.size(50.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "$nivel",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF005B7F)
+            )
+        }
     }
 }
 
@@ -146,7 +248,7 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF005B7F))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -154,7 +256,8 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color.White
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -166,34 +269,11 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
                     modifier = Modifier.size(48.dp)
                 )
                 Column {
-                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun DailyPhrase(title: String, phrase: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-            )
-            Text(
-                text = "\"$phrase\"",
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
-            )
         }
     }
 }

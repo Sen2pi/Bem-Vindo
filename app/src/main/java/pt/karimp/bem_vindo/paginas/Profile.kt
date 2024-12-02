@@ -171,6 +171,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -189,6 +190,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -207,6 +209,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -226,6 +229,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -244,6 +248,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -262,6 +267,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -280,6 +286,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )
@@ -298,6 +305,7 @@ fun Profile(navController: NavController) {
                                 unfocusedBorderColor = Color.LightGray,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
+                                disabledTextColor = Color.LightGray,
                                 focusedLabelColor = Color.White,
                                 unfocusedLabelColor = Color.White
                             )

@@ -189,7 +189,9 @@ fun PaginaDeRegistro(navController: NavController) {
                                                 "codigoPostal" to valores[5],
                                                 "telefone" to valores[6],
                                                 "email" to valores[7],
-                                                "tipo" to "Aluno" // Sempre "Aluno"
+                                                "tipo" to "Aluno",// Sempre "Aluno"
+                                                "progresso" to 0,
+                                                "nivel" to "Básico"
                                             )
                                         )
                                         navController.navigate("home") {
