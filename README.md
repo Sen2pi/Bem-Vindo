@@ -185,6 +185,13 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003846.png)
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003855.png)
 
+##Implementado
+
+###Página de Login e Registro
+![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%193228.png)
+![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%193243.png)
+
+
 ## Contribuições
 
 Se você deseja contribuir com melhorias para este projeto, fique à vontade para criar um fork e submeter um pull request. Se encontrar algum bug ou tiver sugestões, abra uma issue no repositório.
