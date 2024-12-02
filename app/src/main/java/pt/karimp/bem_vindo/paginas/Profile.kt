@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
@@ -32,6 +35,8 @@ fun Profile(navController: NavController) {
     var error by remember { mutableStateOf<String?>(null) }
     var isEditing by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
 
     val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
@@ -93,6 +98,13 @@ fun Profile(navController: NavController) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
                 // Profile Icon
                 IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
@@ -139,7 +151,7 @@ fun Profile(navController: NavController) {
                     // Editable Profile Information
                     userData?.let { user ->
                         Text(
-                            text = "Profil",
+                            text = translations["profile_title"] ?:"Profil",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
@@ -148,58 +160,147 @@ fun Profile(navController: NavController) {
                         TextField(
                             value = user.nome,
                             onValueChange = { userData = userData?.copy(nome = it) },
-                            label = { Text("Nom Complet", color = Color.White) },
+                            label = { Text(translations["full_name_label"] ?:"Nom Complet", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.morada,
                             onValueChange = { userData = userData?.copy(morada = it) },
-                            label = { Text("Adresse", color = Color.White) },
+                            label = { Text(translations["address_label"] ?:"Adresse", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.codigoPostal,
                             onValueChange = { userData = userData?.copy(codigoPostal = it) },
-                            label = { Text("Code Postale", color = Color.White) },
+                            label = { Text(translations["postal_code_label"] ?:"Code Postale", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
+
                         )
                         TextField(
                             value = user.cidade,
                             onValueChange = { userData = userData?.copy(cidade = it) },
-                            label = { Text("Ville", color = Color.White) },
+                            label = { Text(translations["city_label"] ?:"Ville", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.nif,
                             onValueChange = { userData = userData?.copy(nif = it) },
-                            label = { Text("Número D'identification Fiscal", color = Color.White) },
+                            label = { Text(translations["nif_label"] ?:"Número D'identification Fiscal", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.nss,
                             onValueChange = { userData = userData?.copy(nss = it) },
-                            label = { Text("Número de Securité Social", color = Color.White) },
+                            label = { Text(translations["nss_label"] ?:"Número de Securité Social", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.telefone,
                             onValueChange = { userData = userData?.copy(telefone = it) },
-                            label = { Text("Número de Telefone", color = Color.White) },
+                            label = { Text(translations["phone_number_label"] ?:"Número de Telefone", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         TextField(
                             value = user.email,
                             onValueChange = { userData = userData?.copy(email = it) },
-                            label = { Text("Email", color = Color.White) },
+                            label = { Text(translations["email_label"] ?:"Email", color = Color.White) },
                             enabled = isEditing,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF00405A),
+                                unfocusedContainerColor = Color(0xFF00405A),
+                                disabledContainerColor = Color(0xFF00405A),
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.LightGray,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White
+                            )
                         )
                         // Edit and Save Button
                         Row {
@@ -210,7 +311,10 @@ fun Profile(navController: NavController) {
 
                                 if (userEmail != null) {
                                     db.collection("users")
-                                        .whereEqualTo("email", userEmail) // Encontra o documento do usuário logado
+                                        .whereEqualTo(
+                                            "email",
+                                            userEmail
+                                        ) // Encontra o documento do usuário logado
                                         .get()
                                         .addOnSuccessListener { querySnapshot ->
                                             val document = querySnapshot.documents.firstOrNull()
@@ -257,16 +361,32 @@ fun Profile(navController: NavController) {
                                             ).show()
                                         }
                                 } else {
-                                    Toast.makeText(context, "Usuário não logado!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Usuário não logado!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
-                            Button(onClick = { isEditing = !isEditing }) {
-                                Text(text = if (isEditing) "Cancelar" else "Editar")
+                            Button(
+                                onClick = { isEditing = !isEditing },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF00405A),
+                                    contentColor = Color.White
+                                ),
+                            ) {
+                                Text(text = if (isEditing) translations["cancel_button"] ?:"Annuler" else translations["edit_button"] ?:"Editer")
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             if (isEditing) {
-                                Button(onClick = { saveUserData(user) }) {
-                                    Text(text = "Salvar")
+                                Button(
+                                    onClick = { saveUserData(user) },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF00405A),
+                                        contentColor = Color.White
+                                    ),
+                                ) {
+                                    Text(text = translations["save_button"] ?:"Sauvegarder")
                                 }
                             }
                         }
@@ -277,21 +397,33 @@ fun Profile(navController: NavController) {
                             auth.sendPasswordResetEmail(email)
                                 .addOnSuccessListener {
                                     // Mostra a mensagem de sucesso
-                                    Toast.makeText(context, "Email de recuperação enviado", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Email de Recuperation de Mot de Pass envoyé!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                                 .addOnFailureListener {
                                     // Tratar falha
-                                    Toast.makeText(context, "Erro ao enviar email", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur envoyant un email",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                         }
                         // Password Recovery Button
                         Button(
                             onClick = { recoverPassword(user.email) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF00405A),
+                                contentColor = Color.White
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp)
                         ) {
-                            Text(text = "Recuperar Senha")
+                            Text(text = translations["password_recovery_button"] ?:"Recuperer Mot de Passe")
                         }
                     }
                 }
@@ -301,16 +433,16 @@ fun Profile(navController: NavController) {
             if (showDeleteConfirmation) {
                 AlertDialog(
                     onDismissRequest = { showDeleteConfirmation = false },
-                    title = { Text("Confirmar exclusão") },
-                    text = { Text("Você tem certeza de que deseja excluir sua conta?") },
+                    title = { Text(translations["confirm_label"] ?:"Confirmer l'elimination") },
+                    text = { Text(translations["confirm_deletion_phrase"] ?:"Êtes vous certain de vouloir eliminer votre compte?") },
                     confirmButton = {
                         TextButton(onClick = { deleteUser(navController) }) {
-                            Text("Confirmar")
+                            Text(translations["confirm_button"] ?:"Confirmer")
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteConfirmation = false }) {
-                            Text("Cancelar")
+                            Text(translations["cancel_button"] ?:"Annuler")
                         }
                     }
                 )
@@ -333,7 +465,6 @@ fun Profile(navController: NavController) {
         }
     }
 }
-
 
 
 fun deleteUser(navController: NavController) {

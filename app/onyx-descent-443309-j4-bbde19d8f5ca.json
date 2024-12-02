@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "onyx-descent-443309-j4",
+  "private_key_id": "bbde19d8f5ca1a9f33aa7648431d89009c97ae4e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCwobR3qJtVA7J+\ner6sf2QcsiKYZXTdcJsbwOofJ4f8ZXbYYJZ/2/rMmBY9XvMg1krcJH0UKb2lezvN\nqbuWA/26LtchR5kFj8RTDVpabjW0L9lYShniYPAnN6qlnF0qUKrnvW6A4G0FmAVd\n5ZNR5nYvtQ6ZqzmwCvg3x2iViehZQ0CMk2yVMJkXnZiHVTULa1IhIKIC6SVB/5yF\nd52uwXq+Aa0oU847ro4p2opLmx+DTNCO8YcJ5coOo8dU41+P44dzXboXs9MiMG60\nDXLqBOTEHqm5G1Eqji+sUJulK/MLAmeOsjmTH2RhZRysKgQzQbzOURDLPCljobgn\nY2wZjI8dAgMBAAECggEATacJvAF4KKvzcP9tjFCFJsh5xR31ftTenBj31LKAakoB\nMadlAtknLYM/Y8O2h50uVBIGmzKumW3QIN6aBZ3DknK9SXg8oeFOomSgcFk7avgO\nSW5qasfLTLKAZ0aS/uNv/2mchzQjOe5Xjaw8VClJlDe5L33DYs2vynX0WKnEaFkZ\nlwYJhzmCKiQdkompEo9Hu9BTjzhGLpt1nDvUxR8hOvtieJoXlTIvIwlBkPpGp1ng\no1Cix85AypxPNMZG5peYtNbjeZByKB69uzp+JVFgCmPi7reTlO5Tl2WYMprcbnhk\nb4tfSOX49mgBmMH5NKL0K6mhpdwyLeK1THF75+j9UQKBgQDcAXFWVaOHUIRZi4RK\n4H3sNf/d0m2TgjHb13bzzl1l+TIl/6NlJzrS//CLQaRUV5ufV3fw/2HN40qwLwMi\n+vMPTnqujJk2UkX9lKbtt2ZBwd4AKTAkCk4TaCOpr8ZJ/IOf47sGIYY7eHF/H2uE\numNTR1R6i7HAZAi1C8SlKvVTiwKBgQDNh54wtwMWgfy1mFgmlcJ65UNjfK77/Y8X\npo/QEwmS0CSHTR0FdysnaPW4Jpx85T7kr9cTP0jN7FMRYXbuqzOBYXzKpFaty62v\nsUH44nGqZ0KR3nEAlsMJst/cYjIZbLTY3sANV3bz/IalwL57AaDQHDTM/Ef78OA+\nOD3IhNlc9wKBgE/UJi/RezjKOnvTZ/lTY92l6mWuyRvRDg5bLEpjAvjRZyTqkXtO\ntMWDIOEmvF3uPAWhU2AbCn4OjzdGl7jFnhRbwaA8XAud5s+QdNGkznHlyov8Zf9t\nzc605tvXb/fArHIDzAT5fR9vIJ+j4vuSNiAtrbWZorHQmmg3EO9tmv7pAoGBALas\niCxSLVtu8zZQDmFVEEL8zHV7V2e/SNRDhWTx1rt3ZlAfeODntyJTBrrDDqlvdAP8\nSdPglov4NSiokPW2kpO3GxxdDnFwK5KRoMpeMZq8Jo3RwGw+k2Fma9PMLy0r0l1D\nNj1ldOOMmfxuoJ5hpxXxS/i5bh1+TUDf6gH0GeGnAoGAFzQlWSaBUFVnlBFdSh8/\nbB/q+eBsW8oZCqh1qvZ27ZwNoJE2ZOvy4lTv/cXH/TxeLM/CzLtNhQGb7fuzivhA\ns6WvYuP1DGNOszcWx87RplddKwdAhXDM8ljcPvdNPE15+rswYlh0xQxdQS4b7fMs\npZdJL4p/G3pOiJdFi7I8Ndg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "bem-vindo@onyx-descent-443309-j4.iam.gserviceaccount.com",
+  "client_id": "105598397363355095743",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bem-vindo%40onyx-descent-443309-j4.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

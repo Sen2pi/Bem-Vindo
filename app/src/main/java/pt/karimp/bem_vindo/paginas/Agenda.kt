@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -16,11 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable
 fun Agenda(navController: NavController) {
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+
     Scaffold(
         bottomBar = { BottomNavBar(navController = navController) },
         containerColor = MaterialTheme.colorScheme.background
@@ -47,6 +56,14 @@ fun Agenda(navController: NavController) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
+
                 // Profile Icon
                 IconButton(onClick = { navController.navigate("profile")}) {
                     Icon(
@@ -68,9 +85,6 @@ fun Agenda(navController: NavController) {
                         tint = Color.Unspecified // Definindo o ícone para usar sua cor original
                     )
                 }
-
-
-
 
             }
             // Content Section

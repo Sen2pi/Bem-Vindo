@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -13,13 +13,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable
 fun PaginaInicialAluno(navController: NavController) {
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+
     Scaffold(
         bottomBar = { BottomNavBar(navController = navController) },
         containerColor = MaterialTheme.colorScheme.background
@@ -47,13 +51,21 @@ fun PaginaInicialAluno(navController: NavController) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
+
                 // Profile Icon
-                IconButton(onClick = { navController.navigate("profile")}) {
+                IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_perfil), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_perfil),
                         contentDescription = "Profile",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
 
@@ -62,16 +74,12 @@ fun PaginaInicialAluno(navController: NavController) {
                 // Logoff Icon
                 IconButton(onClick = { navController.navigate("login") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_logout), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_logout),
                         contentDescription = "Logoff",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
-
-
-
-
             }
 
             // Content Section
@@ -84,10 +92,11 @@ fun PaginaInicialAluno(navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.size(50.dp))
                 // Progress Section
-                ProgressSection(progress = 50) // Simulated progress value
+                ProgressSection(progress = 50, title = translations["progress_title"]!!)
 
                 // Tutor Section
                 TutorSection(
+                    title = translations["tutor_title"]!!,
                     tutorName = "Karim Santos",
                     city = "Braga",
                     email = "karim@exemplo.com"
@@ -95,16 +104,16 @@ fun PaginaInicialAluno(navController: NavController) {
 
                 // Daily Phrase Section
                 DailyPhrase(
-                    phrase = "Burro velho não toma andadura e se toma, pouco se lhe dura."
+                    title = translations["daily_phrase_title"]!!,
+                    phrase = translations["daily_phrase"]!!
                 )
             }
         }
     }
 }
 
-
 @Composable
-fun ProgressSection(progress: Int) {
+fun ProgressSection(progress: Int, title: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,12 +121,12 @@ fun ProgressSection(progress: Int) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Mon Progrès",
+            text = title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(bottom = 8.dp)
         )
         LinearProgressIndicator(
-            progress = { progress / 100f }, // Progress como lambda
+            progress = progress / 100f,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp),
@@ -133,7 +142,7 @@ fun ProgressSection(progress: Int) {
 }
 
 @Composable
-fun TutorSection(tutorName: String, city: String, email: String) {
+fun TutorSection(title: String, tutorName: String, city: String, email: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -144,7 +153,7 @@ fun TutorSection(tutorName: String, city: String, email: String) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Mon Tuteur",
+                text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Row(
@@ -167,7 +176,7 @@ fun TutorSection(tutorName: String, city: String, email: String) {
 }
 
 @Composable
-fun DailyPhrase(phrase: String) {
+fun DailyPhrase(title: String, phrase: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -178,18 +187,17 @@ fun DailyPhrase(phrase: String) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Expression du jour",
+                text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Text(
                 text = "\"$phrase\"",
                 style = MaterialTheme.typography.bodyMedium.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
             )
-            Text(
-                text = "Le significat de cette expression c’est les têtes de mules ne changeront jamais.",
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
         }
     }
 }
+
+
+
+
