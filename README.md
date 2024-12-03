@@ -45,7 +45,7 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
 - ✅ Integração com Firebase Authentication e Firestore para:
   - ✅ Registro de usuários.
   - ✅ Login com autenticação.
-  - 🔲 Pedido de reposição de senha antes de login
+  - ✅  Pedido de reposição de senha antes de login
 - ✅ Página inicial simples após login bem-sucedido.
 - ✅ Dashboard .
   - ✅ Informações do Tutor.
