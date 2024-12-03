@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -173,33 +174,34 @@ fun ProgressSection(progress: Int, title: String, nivel: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            .background(color = Color(0xFFA1B8CC), shape = RoundedCornerShape(12.dp)) ,// Define o fundo com cantos arredondados
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.padding(8.dp),
             color = Color(0xFF005B7F)
         )
         LinearProgressIndicator(
             progress = progress / 100f,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp),
-            color = MaterialTheme.colorScheme.primary,
+                .height(35.dp)
+                .padding(15.dp),
+            color = Color(0xFF005B7F),
             trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
         )
         Text(
             text = "$progress%",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(8.dp),
             color = Color(0xFF005B7F)
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             when (nivel) {
                 "Básico" -> Image(
