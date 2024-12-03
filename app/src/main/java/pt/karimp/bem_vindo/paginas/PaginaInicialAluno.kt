@@ -162,7 +162,8 @@ fun PaginaInicialAluno(navController: NavController) {
                 // Daily Phrase Section
                 DailyPhrase(
                     title = translations["daily_phrase_title"]!!,
-                    chosenLanguage = selectedLanguage
+                    chosenLanguage = selectedLanguage,
+                    userDocumentID = currentUserDocumentId
                 )
             }
         }
