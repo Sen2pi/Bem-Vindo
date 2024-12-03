@@ -199,8 +199,8 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 
 ### Página Inicial (Dashboard) 
 
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%20185931.png)
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%20190200.png)
+![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20185931.png)
+![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20190200.png)
 
 
 ## Contribuições
