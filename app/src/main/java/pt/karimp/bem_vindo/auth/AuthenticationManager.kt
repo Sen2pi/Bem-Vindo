@@ -46,6 +46,19 @@ public class AuthenticationManager {
         }
         awaitClose()
     }
+    fun redefinirSenha(email: String): Flow<AuthResponse> =
+        callbackFlow {
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        trySend(AuthResponse.Success)
+                    } else {
+                        trySend(AuthResponse.Error(message = task.exception?.message ?: "Erro ao enviar o email de redefinição de senha."))
+                    }
+                }
+            awaitClose()
+        }
+
 
 }
 interface AuthResponse{

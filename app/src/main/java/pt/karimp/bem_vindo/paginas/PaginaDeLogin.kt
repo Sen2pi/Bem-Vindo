@@ -2,6 +2,7 @@ package pt.karimp.bem_vindo.paginas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -96,10 +97,12 @@ fun PaginaDeLogin(navController: NavController) {
             OutlinedTextField(
                 value = senha,
                 onValueChange = { senha = it },
-                label = { Text(
-                    text = "Mot de Pass",
+                label = {
+                    Text(
+                        text = "Mot de Pass",
 
-                    ) },
+                        )
+                },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 leadingIcon = {
@@ -131,7 +134,8 @@ fun PaginaDeLogin(navController: NavController) {
                         if (response is AuthResponse.Success) {
                             verificaTipoUsuario(navController, email)
                         } else {
-                            errorMessage = "Email ou mot de passe erroné! Insérez des identifiants valides."
+                            errorMessage =
+                                "Email ou mot de passe erroné! Insérez des identifiants valides."
                         }
                     }.launchIn(coroutineScope)
                 },
@@ -168,6 +172,9 @@ fun PaginaDeLogin(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -182,5 +189,40 @@ fun PaginaDeLogin(navController: NavController) {
                 )
             }
         }
+
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Adicionar outros elementos aqui, se necessário
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(50.dp), // Alinha ao fundo da tela
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = { navController.navigate("resetPassword") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00405A), // Cor de fundo do botão
+                    contentColor = Color.White          // Cor do texto/ícone dentro do botão
+                ),
+                modifier = Modifier
+                    .height(50.dp),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(
+                    text = "Mot de passe oublié?",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+
 }
