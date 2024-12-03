@@ -47,11 +47,11 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
   - ✅ Login com autenticação.
   - 🔲 Pedido de reposição de senha antes de login
 - ✅ Página inicial simples após login bem-sucedido.
-- ✅ Dashboard 90% completo (falta o like no provérbio diário).
+- ✅ Dashboard .
   - ✅ Informações do Tutor.
   - ✅ Informações do Progresso.
   - ✅ Provérbio do dia.
-  - 🔲 Like no proverbio do dia
+  - ✅ Like no proverbio do dia
 - ✅ Página de Perfil:
   - ✅ Com opção de editar campos.
   - ✅ Com opção de apagar a conta.
