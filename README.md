@@ -168,7 +168,7 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
    - A classe `AuthenticationManager` contém funções para login e registro com email e senha usando o Firebase Authentication.
    - Ela utiliza o Firebase para criar um novo usuário ou realizar login e retornar uma resposta de sucesso ou erro.
   
-###Mockups : Isto é o MVP efectuado em figma do resultado que se pretende alcançar
+### Mockups : Isto é o MVP efectuado em figma do resultado que se pretende alcançar
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003446.png)
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003506.png)
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003519.png)
@@ -189,9 +189,9 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003846.png)
 ![Página de Inicio](mockups/Captura%20de%20ecrã%202024-11-15%20003855.png)
 
-#Implementado
+## Implementado
 
-##Página de Login e Registro
+### Página de Login e Registro
 
 ![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20194508.png)
 ![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%20193243.png)
