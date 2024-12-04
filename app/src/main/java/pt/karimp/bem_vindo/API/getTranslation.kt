@@ -24,7 +24,8 @@ fun getTranslations(language: String): Map<String, String> {
             "delete_account_button" to "Excluir Conta",
             "confirm_label" to "Confirmar a eliminação",
             "confirm_deletion_phrase" to "Tem certeza de que deseja eliminar sua conta?",
-            "confirm_button" to "Confirmar"
+            "confirm_button" to "Confirmar",
+            "uploading_audio" to "A Fazer o upload do audio..."
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -47,7 +48,8 @@ fun getTranslations(language: String): Map<String, String> {
             "delete_account_button" to "Supprimer le Compte",
             "confirm_label" to "Confirmer l'élimination",
             "confirm_deletion_phrase" to "Êtes-vous certain de vouloir éliminer votre compte ?",
-            "confirm_button" to "Confirmer"
+            "confirm_button" to "Confirmer",
+            "uploading_audio" to "Chargement de l'audio en cours..."
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -70,7 +72,8 @@ fun getTranslations(language: String): Map<String, String> {
             "delete_account_button" to "Delete Account",
             "confirm_label" to "Confirm deletion",
             "confirm_deletion_phrase" to "Are you sure you want to delete your account?",
-            "confirm_button" to "Confirm"
+            "confirm_button" to "Confirm",
+            "uploading_audio" to "Uploading Audio..."
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -93,7 +96,8 @@ fun getTranslations(language: String): Map<String, String> {
             "delete_account_button" to "Eliminar Cuenta",
             "confirm_label" to "Confirmar eliminación",
             "confirm_deletion_phrase" to "¿Está seguro de que desea eliminar su cuenta?",
-            "confirm_button" to "Confirmar"
+            "confirm_button" to "Confirmar",
+            "uploading_audio" to "Carregando el audio..."
         )
         else -> emptyMap()
     }

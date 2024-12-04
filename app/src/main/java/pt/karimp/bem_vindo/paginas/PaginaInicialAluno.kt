@@ -28,6 +28,7 @@ import pt.karimp.bem_vindo.R
 
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import pt.karimp.bem_vindo.models.User
+import pt.karimp.bem_vindo.ui.theme.topNavBar
 
 @Composable
 fun PaginaInicialAluno(navController: NavController) {
@@ -81,29 +82,10 @@ fun PaginaInicialAluno(navController: NavController) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController) },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            // Background Image
-            Image(
-                painter = painterResource(id = R.mipmap.azulejo1),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.60f)
-            )
-
-            // Icons in the top right corner
+        topBar = {  // Icons in the top right corner
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 20.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -136,7 +118,27 @@ fun PaginaInicialAluno(navController: NavController) {
                         tint = Color.Unspecified
                     )
                 }
-            }
+            } },
+        bottomBar = { BottomNavBar(navController = navController) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            // Background Image
+            Image(
+                painter = painterResource(id = R.mipmap.azulejo1),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.60f)
+            )
+
+
 
             // Content Section
             Column(

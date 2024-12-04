@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import io.appwrite.Client
 import io.appwrite.models.InputFile
 import io.appwrite.services.Storage
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 import pt.karimp.bem_vindo.API.checkAndRequestPermissions
 import pt.karimp.bem_vindo.R
@@ -23,10 +24,12 @@ import java.util.UUID
 
 @Composable
 fun AudioRecorder(
+    onRecordStart: (IsRecording: Boolean) -> Unit,
     onRecordComplete: (filePath: String, audioUrl: String) -> Unit,
     bucketId: String
 ) {
     var isRecording by remember { mutableStateOf(false) }
+    var IsRecording by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val outputFilePath = "${context.filesDir}/audio_${System.currentTimeMillis()}.3gp"
     val appwrite = Client(context).setProject("674fb276000fbf815e06")
@@ -36,12 +39,21 @@ fun AudioRecorder(
     val uuid = UUID.randomUUID().toString()
 
     // Função para reproduzir som de alerta
-    fun playAlertSound(resourceId: Int) {
+    fun playStopSound(resourceId: Int) {
         val mediaPlayer = MediaPlayer.create(context, resourceId)
         mediaPlayer.start()
         mediaPlayer.setOnCompletionListener { it.release() }
     }
-
+    fun playAlertSound(resourceId: Int, onCompletion: () -> Unit) {
+        IsRecording = true
+        onRecordStart(IsRecording)
+        val mediaPlayer = MediaPlayer.create(context, resourceId)
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener {
+            it.release()
+            onCompletion()  // Chama a função de callback quando o som terminar
+        }
+    }
     // Upload de arquivo para Appwrite
     suspend fun uploadFile(bucketId: String, filePath: String) {
         val storage = Storage(appwrite)
@@ -72,7 +84,7 @@ fun AudioRecorder(
                 start()
             }
             isRecording = true
-            playAlertSound(R.raw.start_sound) // Reproduz som de início
+            // Reproduz som de início
         } catch (e: Exception) {
             Toast.makeText(context, "Erro ao iniciar gravação: ${e.message}", Toast.LENGTH_SHORT).show()
         }
@@ -87,8 +99,9 @@ fun AudioRecorder(
             }
             mediaRecorder = null
             isRecording = false
-            playAlertSound(R.raw.stop_sound) // Reproduz som de parada
+            playStopSound(R.raw.stop_sound)
             coroutineScope.launch { uploadFile(bucketId, outputFilePath) }
+
         } catch (e: Exception) {
             Toast.makeText(context, "Erro ao parar gravação: ${e.message}", Toast.LENGTH_SHORT).show()
         }
@@ -97,7 +110,7 @@ fun AudioRecorder(
     // Botão de microfone
     IconButton(
         onClick = {
-            if (isRecording) stopRecording() else startRecording()
+            if (isRecording) stopRecording() else playAlertSound(R.raw.start_sound){startRecording()}
         },
     ) {
         Icon(
