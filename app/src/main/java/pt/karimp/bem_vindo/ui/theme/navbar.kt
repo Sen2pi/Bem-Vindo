@@ -1,23 +1,54 @@
 package pt.karimp.bem_vindo.ui.theme
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pt.karimp.bem_vindo.R // Certifique-se de usar o caminho correto para o recurso
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.play.integrity.internal.c
+import pt.karimp.bem_vindo.utils.MessageNotification
+import pt.karimp.bem_vindo.utils.sendNewMessageNotification
 
+
+fun getUnreadMessages(userId: String, onMessagesCountChanged: (Int) -> Unit) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Obtenha as mensagens não lidas para o usuário conectado
+    firestore.collection("messages")
+        .whereEqualTo("toUserId", userId)
+        .whereEqualTo("read", false)
+        .get()
+        .addOnSuccessListener { documents ->
+            // Contabiliza as mensagens não lidas
+            val unreadCount = documents.size()
+            onMessagesCountChanged(unreadCount)
+        }
+        .addOnFailureListener { exception ->
+            // Handle failure
+            println("Error getting unread messages: ${exception.message}")
+        }
+}
 @Composable
-fun BottomNavBar(navController: NavController) {
+fun BottomNavBar(navController: NavController, userId: String) {
+    var unreadMessagesCount by remember { mutableStateOf(0)}
+    val context = LocalContext.current
+    // Chama a função para buscar mensagens não lidas sempre que o userId mudar
+    LaunchedEffect(userId) {
+        getUnreadMessages(userId) { count ->
+            unreadMessagesCount = count
+            if (unreadMessagesCount > 0) {
+                // Dispara a notificação se houver novas mensagens não lidas
+                sendNewMessageNotification(context)
+            }
+        }
+    }
     NavigationBar(
         containerColor = Color(0xFFA1B8CC), // Azul inspirado nos azulejos portugueses
     ) {
@@ -99,17 +130,21 @@ fun BottomNavBar(navController: NavController) {
             )
         )
 
-        // Settings
         NavigationBarItem(
             icon = {
                 Icon(
                     painter = painterResource(id = R.mipmap.chat_for),
                     contentDescription = "Chat",
-                    modifier = Modifier.size(50.dp), // Tamanho do ícone ajustado
-                    tint = Color.Unspecified // Desativa a tintagem para preservar a cor original da imagem
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.Unspecified
                 )
+                if (unreadMessagesCount > 0) {
+                    Badge {
+                        Text(text = unreadMessagesCount.toString())
+                    }
+                }
             },
-            selected = false, // Atualize a lógica para seleção dinâmica
+            selected = false,
             onClick = { navController.navigate("chat") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color.White,

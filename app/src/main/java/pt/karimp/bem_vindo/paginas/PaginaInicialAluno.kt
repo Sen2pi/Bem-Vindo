@@ -119,7 +119,7 @@ fun PaginaInicialAluno(navController: NavController) {
                     )
                 }
             } },
-        bottomBar = { BottomNavBar(navController = navController) },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Box(

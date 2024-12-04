@@ -26,6 +26,9 @@ import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import pt.karimp.bem_vindo.models.Message
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -62,7 +65,8 @@ fun Chat(navController: NavController) {
     val bucketID = "674fb37d000e1677bcfd"
     var isRecording by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
-    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    val translations =
+        getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
     val mediaPlayer = remember { MediaPlayer.create(context, R.raw.message_send_sound) }
 
     // Função para excluir o arquivo de áudio do Appwrite
@@ -71,6 +75,24 @@ fun Chat(navController: NavController) {
             val storage = Storage(appwrite)
             storage.deleteFile(bucketID, fileId) // Exclui o arquivo do Appwrite
             navController.navigate("chat")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun markMessagesAsRead(db: FirebaseFirestore, currentUserId: String) {
+        try {
+            // Carrega as mensagens onde o currentUser é o destinatário (toUserId)
+            val unreadMessagesQuery = db.collection("messages")
+                .whereEqualTo("toUserId", currentUserId)
+                .whereEqualTo("read", false)
+                .get()
+                .await()
+
+            // Atualiza o campo 'read' para true para cada mensagem não lida
+            unreadMessagesQuery.documents.forEach { document ->
+                db.collection("messages").document(document.id).update("read", true).await()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -160,6 +182,7 @@ fun Chat(navController: NavController) {
                             }
                         // Carregar mensagens que envolvem o aluno ou o professor
                         loadMessages(db, currentUserDocumentId)
+                        markMessagesAsRead(db, currentUserDocumentId)
                     }
                 }
             } catch (e: Exception) {
@@ -206,7 +229,7 @@ fun Chat(navController: NavController) {
                 }
             }
         },
-        bottomBar = { BottomNavBar(navController = navController) },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
 
@@ -236,7 +259,12 @@ fun Chat(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
-                    MessageItem(message, currentUserDocumentId)
+                    MessageItem(
+                        message,
+                        currentUserDocumentId,
+                        professorData?.nome ?: "",
+                        userData?.nome ?: ""
+                    )
                 }
             }
 
@@ -362,7 +390,12 @@ fun sendMessage(
 }
 
 @Composable
-fun MessageItem(message: Message, currentUserDocumentId: String) {
+fun MessageItem(
+    message: Message,
+    currentUserDocumentId: String,
+    professorName: String,
+    userName: String
+) {
     val isSentByCurrentUser = message.fromUserId == currentUserDocumentId
     val alignment = if (isSentByCurrentUser) Alignment.CenterEnd else Alignment.CenterStart
 
@@ -371,29 +404,97 @@ fun MessageItem(message: Message, currentUserDocumentId: String) {
             .fillMaxWidth()
             .wrapContentSize(alignment)
     ) {
-        Column(
-            modifier = Modifier
-                .background(
-                    color = if (isSentByCurrentUser) Color(0xFF388E3C) else Color(0xFF81C784),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(12.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = if (isSentByCurrentUser) Arrangement.End else Arrangement.Start
         ) {
-            if (message.type == "audio" && message.audioUrl.isNotEmpty()) {
-                AudioPlayer(audioUrl = message.audioUrl)
-            } else {
-                Text(
-                    text = message.message,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                    color = Color.White
+            if (currentUserDocumentId != message.fromUserId) {
+                // Ícone do professor (antes da caixa de mensagem)
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_professor),
+                    contentDescription = "Ícone Professor",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(75.dp)
                 )
             }
-            Text(
-                text = formatTimestamp(message.timestamp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 10.sp
-            )
+            // Caixa de mensagem
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = if (isSentByCurrentUser) Color(0xFF388E3C) else Color(0xFF81C784),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                // Nome do remetente
+                Text(
+                    text = if (currentUserDocumentId == message.fromUserId) userName else professorName,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                    color = Color.White
+                )
+
+                // Exibição da mensagem ou áudio
+                if (message.type == "audio" && message.audioUrl.isNotEmpty()) {
+                    AudioPlayer(audioUrl = message.audioUrl)
+                } else {
+                    Text(
+                        text = message.message,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                        color = Color.White
+                    )
+                }
+
+                // Linha com timestamp e ícones de status
+                Row(
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = formatTimestamp(message.timestamp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+
+                    // Ícones de status (mensagem lida ou não)
+                    if (currentUserDocumentId == message.toUserId) {
+                        // Mensagem lida
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Mensagem lida",
+                            tint = Color.Blue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    } else if (currentUserDocumentId == message.fromUserId && !message.read) {
+                        // Mensagem não lida
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Mensagem lida",
+                            tint = Color.Blue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Mensagem não lida",
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            // Ícone do professor à esquerda e do aluno à direita
+            if (currentUserDocumentId == message.fromUserId) {
+                // Ícone do aluno (depois da caixa de mensagem)
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_aluno),
+                    contentDescription = "Ícone Aluno",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(75.dp)
+                )
+            }
         }
     }
 }
+

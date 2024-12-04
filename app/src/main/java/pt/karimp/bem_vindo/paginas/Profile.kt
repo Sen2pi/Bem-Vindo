@@ -37,7 +37,7 @@ fun Profile(navController: NavController) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
     val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
-
+    var currentUserDocumentId by remember { mutableStateOf("") }
     val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
     // Fetch user data from Firestore if logged in
@@ -51,6 +51,7 @@ fun Profile(navController: NavController) {
                     .addOnSuccessListener { querySnapshot ->
                         if (!querySnapshot.isEmpty) {
                             val document = querySnapshot.documents.first()
+                            currentUserDocumentId = document.id
                             userData = document.toObject(User::class.java)
                         } else {
                             error = "Usuário não encontrado"
@@ -72,7 +73,7 @@ fun Profile(navController: NavController) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController) },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Box(
