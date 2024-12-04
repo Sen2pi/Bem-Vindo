@@ -466,6 +466,12 @@ fun MessageItem(
                             tint = Color.Blue,
                             modifier = Modifier.size(16.dp)
                         )
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Mensagem lida",
+                            tint = Color.Blue,
+                            modifier = Modifier.size(16.dp)
+                        )
                     } else if (currentUserDocumentId == message.fromUserId && !message.read) {
                         // Mensagem não lida
                         Icon(
