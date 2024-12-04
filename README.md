@@ -58,7 +58,11 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
   - ✅ Com a opção de solicitar envio de email de mudança de senha.
 - Chat:
   - ✅ Envio de mensagens.
-  - 🔲 Envio de áudios
+  - ✅ Envio de áudios
+- Ahgenda:
+  - 🔲 Confirmação de presença
+  - 🔲 Aulas marcadas
+  - 🔲 preferencia de horario
 
 
 ## Tecnologias Utilizadas
