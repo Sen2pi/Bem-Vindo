@@ -1,5 +1,6 @@
 package pt.karimp.bem_vindo.paginas
 
+import android.media.MediaRecorder
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,9 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,25 +23,30 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import pt.karimp.bem_vindo.API.LanguageSelector
-import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
-import android.media.MediaPlayer
-import androidx.compose.animation.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import pt.karimp.bem_vindo.models.Message
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.play.integrity.internal.a
 import kotlinx.coroutines.launch
+import io.appwrite.Client
+import io.appwrite.models.InputFile
+import io.appwrite.services.Storage
+import pt.karimp.bem_vindo.utils.AudioPlayer
+import pt.karimp.bem_vindo.utils.AudioRecorder
+import java.io.File
+import java.util.Random
 
 
 @Composable
 fun Chat(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     var messageSent by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val currentUser = auth.currentUser
     val db = FirebaseFirestore.getInstance()
     var loading by remember { mutableStateOf(true) }
@@ -57,9 +60,12 @@ fun Chat(navController: NavController) {
     var currentUserDocumentId by remember { mutableStateOf("") }
     var professorDocumentId by remember { mutableStateOf("") }
     var selectedLanguage by remember { mutableStateOf("fr") }
-    val translations = getTranslations(selectedLanguage)
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    var audioUrls by remember { mutableStateOf<String?>(null) }
+    val appwrite = Client(context).setProject("674fb276000fbf815e06")
+    val bucketID = "674fb37d000e1677bcfd"
+
     suspend fun loadMessages(db: FirebaseFirestore, currentUserId: String) {
         try {
 
@@ -219,99 +225,7 @@ fun Chat(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentSize(
-                                align = if (message.fromUserId == currentUserDocumentId) {
-                                    Alignment.CenterEnd // Alinhar à direita para mensagens enviadas
-                                } else {
-                                    Alignment.CenterStart // Alinhar à esquerda para mensagens recebidas
-                                }
-                            )
-                    ) {
-
-                        Column(
-                            modifier = Modifier
-                                .background(
-                                    color = if (message.fromUserId == currentUserDocumentId) {
-                                        Color(0xFF388E3C) // Verde escuro para mensagens enviadas
-                                    } else {
-                                        Color(0xFF81C784) // Azul claro para mensagens recebidas
-                                    },
-                                    shape = RoundedCornerShape(16.dp)
-
-                                )
-                                .padding(12.dp)
-                                .width(300.dp)
-
-                        ) {
-                            // Nome do remetente
-                            Text(
-                                text = if (message.fromUserId == currentUserDocumentId) {
-                                    "${userData?.nome}"
-                                } else {
-                                    "${professorData?.nome}"
-                                },
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                                color = Color.White.copy(alpha = 0.7f),
-                                modifier = Modifier
-                                    .padding(bottom = 4.dp)
-
-                            )
-
-                            // Alinhando o ícone e o texto da mensagem
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = if (message.fromUserId == currentUserDocumentId) {
-                                    Arrangement.End // Alinha à direita para mensagens enviadas pelo usuário
-                                } else {
-                                    Arrangement.Start // Alinha à esquerda para mensagens enviadas pelo professor
-                                }
-                            ) {
-                                // Ícone do usuário
-                                if (message.fromUserId != currentUserDocumentId) {
-                                    // Ícone à esquerda para mensagens do professor
-                                    Icon(
-                                        painter = painterResource(id =R.mipmap.ic_professor), // Ícone de usuário
-                                        contentDescription = "Usuário",
-                                        tint = Color.Unspecified,
-                                        modifier = Modifier.size(50.dp) // Tamanho do ícone
-                                    )
-
-                                    Spacer(modifier = Modifier.width(8.dp)) // Espaço entre o ícone e o texto
-                                }
-
-                                // Texto da mensagem
-                                Text(
-                                    text = message.message,
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                                    color = Color.White,
-                                    modifier = Modifier.weight(1f) // O texto ocupa o espaço restante
-                                )
-
-                                if (message.fromUserId == currentUserDocumentId) {
-                                    // Ícone à direita para mensagens do usuário
-                                    Spacer(modifier = Modifier.width(8.dp)) // Espaço entre o texto e o ícone
-                                    Icon(
-                                        painter = painterResource(id =R.mipmap.ic_aluno), // Ícone de usuário
-                                        contentDescription = "Usuário",
-                                        tint = Color.Unspecified,
-                                        modifier = Modifier.size(50.dp) // Tamanho do ícone
-                                    )
-                                }
-                            }
-
-                            // Data e hora da mensagem
-                            Text(
-                                text = formatTimestamp(message.timestamp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 10.sp
-                            )
-                        }
-                    }
-
+                    MessageItem(message, currentUserDocumentId)
                 }
             }
 
@@ -320,54 +234,87 @@ fun Chat(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
             ) {
-                // Caixa de texto
-                BasicTextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .background(Color(0xFF81C784), RoundedCornerShape(32.dp)) // Verde claro
-                        .padding(16.dp),
-                    textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 16.sp),
-                    cursorBrush = SolidColor(Color.White),
-                    maxLines = 1
-                )
+                        .fillMaxWidth(),
 
-                // Ícone de envio sobreposto ao campo de texto
-                IconButton(
-                    onClick = {
-                        if (messageText.text.isNotBlank() && professorData != null) {
-                            sendMessage(
-                                db = db,
-                                fromUserId = currentUserDocumentId,
-                                toUserId = professorDocumentId,
-                                message = messageText.text,
-                                type = "text"
-                            )
-                            messageText = TextFieldValue("")
-                            messageSent = true // Alterar o estado para mostrar o ícone
-                            navController.navigate("chat")
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                        .size(30.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Enviar Texto",
-                        tint = Color(0xFF388E3C)
+                    BasicTextField(
+                        value = messageText,
+                        onValueChange = { messageText = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp)
+                            .background(Color(0xFF81C784), RoundedCornerShape(32.dp)) // Verde claro
+                            .padding(16.dp),
+                        textStyle = LocalTextStyle.current.copy(
+                            color = Color.White,
+                            fontSize = 16.sp
+                        ),
+                        cursorBrush = SolidColor(Color.White),
+                        maxLines = 1
                     )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Botão de gravação
+                    AudioRecorder(
+                        onRecordComplete = { _, audioUrl ->
+                            audioUrls = audioUrl
+                            messageText = TextFieldValue(audioUrl) // Atualiza com o URL do áudio
+                        },
+                        bucketId = bucketID
+                    )
+
+
+                    // Ícone de envio sobreposto ao campo de texto
+                    IconButton(
+                        onClick = {
+                            if (messageText.text.isNotBlank() && professorData != null) {
+                                if (messageText.text.startsWith("https://cloud.appwrite.io/v1/")) {
+                                    sendMessage(
+                                        db = db,
+                                        fromUserId = currentUserDocumentId,
+                                        toUserId = professorDocumentId,
+                                        message = messageText.text,
+                                        type = "audio",
+                                        audioUrl = audioUrls.toString(),
+                                    )
+                                } else {
+                                    sendMessage(
+                                        db = db,
+                                        fromUserId = currentUserDocumentId,
+                                        toUserId = professorDocumentId,
+                                        message = messageText.text,
+                                        type = "text",
+                                        audioUrl = audioUrls.toString(),
+                                    )
+                                }
+
+                                messageText = TextFieldValue("")
+                                messageSent = true // Alterar o estado para mostrar o ícone
+                                navController.navigate("chat")
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(40.dp)
+                    ) {
+
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_send),
+                            contentDescription = "Enviar Texto",
+                            tint = Color.Unspecified
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 fun formatTimestamp(timestamp: Timestamp): String {
     val sdf = java.text.SimpleDateFormat(
@@ -382,15 +329,54 @@ fun sendMessage(
     fromUserId: String,
     toUserId: String,
     message: String,
-    type: String
+    type: String,
+    audioUrl: String
 ) {
     val newMessage = hashMapOf(
         "fromUserId" to fromUserId,
         "toUserId" to toUserId,
         "message" to message,
         "type" to type,
+        "audioUrl" to audioUrl,
         "timestamp" to Timestamp.now(), // Automatically get current timestamp
         "read" to false
     )
     db.collection("messages").add(newMessage)
+}
+
+@Composable
+fun MessageItem(message: Message, currentUserDocumentId: String) {
+    val isSentByCurrentUser = message.fromUserId == currentUserDocumentId
+    val alignment = if (isSentByCurrentUser) Alignment.CenterEnd else Alignment.CenterStart
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(alignment)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(
+                    color = if (isSentByCurrentUser) Color(0xFF388E3C) else Color(0xFF81C784),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(12.dp)
+        ) {
+            if (message.type == "audio" && message.audioUrl.isNotEmpty()) {
+                AudioPlayer(audioUrl = message.audioUrl)
+            } else {
+                Text(
+                    text = message.message,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                    color = Color.White
+                )
+            }
+            Text(
+                text = formatTimestamp(message.timestamp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 10.sp
+            )
+        }
+    }
 }

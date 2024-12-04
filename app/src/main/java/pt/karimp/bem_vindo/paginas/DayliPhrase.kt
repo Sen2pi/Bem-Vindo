@@ -34,9 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.android.play.integrity.internal.i
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.getField
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import pt.karimp.bem_vindo.models.Like
@@ -78,24 +76,37 @@ fun DailyPhrase(title: String, chosenLanguage: String, userDocumentID: String) {
                 error = "Nenhuma frase encontrada."
             }
             val currentId = currentUserId.value
-            println("Consultando com user: $currentId e documento: $phraseDocumentId")
             val likeQuery = db.collection("likes")
                 .whereEqualTo("documento", phraseDocumentId)
                 .whereEqualTo("user", currentId)
                 .get()
                 .await()
-            println("Número de documentos encontrados: ${likeQuery.size()}")
             if (likeQuery.documents.isNotEmpty()) {
                 val likeDocument = likeQuery.documents.first()
-                println("Documento encontrado: ${likeDocument.data}") // Verifique o documento
 
                 try {
                     likeData = likeDocument.toObject(Like::class.java)
-                    println("Objeto Like: $likeData")
                     isLiked = likeData?.like ?: false
                 } catch (e: Exception) {
-                    println("Erro ao mapear o documento para Like: ${e.message}")
                     e.printStackTrace()
+                }
+            }else{
+                db.collection("likes").add(
+                    mapOf(
+                        "user" to currentId,
+                        "documento" to phraseDocumentId,
+                        "like" to false
+                    )
+                ).await()
+                val likeQuery = db.collection("likes")
+                    .whereEqualTo("documento", phraseDocumentId)
+                    .whereEqualTo("user", currentId)
+                    .get()
+                    .await()
+                if (likeQuery.documents.isNotEmpty()) {
+                    val likeDocument = likeQuery.documents.first()
+                        likeData = likeDocument.toObject(Like::class.java)
+                        isLiked = likeData?.like ?: false
                 }
             }
         } catch (e: Exception) {

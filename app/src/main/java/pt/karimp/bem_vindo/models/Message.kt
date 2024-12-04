@@ -8,5 +8,6 @@ data class Message(
     val message: String = "",
     val type: String = "text",
     val timestamp: Timestamp = Timestamp.now(),
-    val read: Boolean = false
+    val read: Boolean = false,
+    val audioUrl: String = "",
 )
