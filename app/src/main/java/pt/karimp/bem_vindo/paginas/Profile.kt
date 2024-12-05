@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.API.getTranslations
+import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
@@ -500,13 +501,3 @@ fun deleteUser(navController: NavController) {
     }
 }
 
-data class User(
-    val nome: String = "",
-    val email: String = "",
-    val cidade: String = "",
-    val codigoPostal: String = "",
-    val morada: String = "",
-    val nif: String = "",
-    val nss: String = "",
-    val telefone: String = "",
-)

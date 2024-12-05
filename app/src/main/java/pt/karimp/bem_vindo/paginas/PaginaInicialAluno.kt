@@ -85,7 +85,7 @@ fun PaginaInicialAluno(navController: NavController) {
         topBar = {  // Icons in the top right corner
             Row(
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -122,6 +122,14 @@ fun PaginaInicialAluno(navController: NavController) {
         bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
+        Image(
+            painter = painterResource(id = R.mipmap.azulejo1),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.60f)
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -129,14 +137,7 @@ fun PaginaInicialAluno(navController: NavController) {
             contentAlignment = Alignment.TopCenter
         ) {
             // Background Image
-            Image(
-                painter = painterResource(id = R.mipmap.azulejo1),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.60f)
-            )
+
 
 
 

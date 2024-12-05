@@ -36,10 +36,12 @@ import kotlinx.coroutines.launch
 import io.appwrite.Client
 import io.appwrite.services.Storage
 import pt.karimp.bem_vindo.API.getTranslations
+import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.utils.AudioPlayer
 import pt.karimp.bem_vindo.utils.AudioRecorder
 import pt.karimp.bem_vindo.utils.ChatInputSection
 import pt.karimp.bem_vindo.utils.extractFileId
+import pt.karimp.bem_vindo.utils.formatTimestamp
 
 @Composable
 fun Chat(navController: NavController) {
@@ -69,7 +71,6 @@ fun Chat(navController: NavController) {
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
     val mediaPlayer = remember { MediaPlayer.create(context, R.raw.message_send_sound) }
 
-    // Função para excluir o arquivo de áudio do Appwrite
     suspend fun deleteAudioFile(fileId: String) {
         try {
             val storage = Storage(appwrite)
@@ -194,7 +195,7 @@ fun Chat(navController: NavController) {
         topBar = {  // Icons in the top right corner
             Row(
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -358,15 +359,6 @@ fun Chat(navController: NavController) {
             }
         }
     }
-}
-
-
-fun formatTimestamp(timestamp: Timestamp): String {
-    val sdf = java.text.SimpleDateFormat(
-        "d 'de' MMMM 'de' yyyy 'às' HH:mm:ss",
-        java.util.Locale("pt", "pt")
-    )
-    return sdf.format(timestamp.toDate())
 }
 
 fun sendMessage(

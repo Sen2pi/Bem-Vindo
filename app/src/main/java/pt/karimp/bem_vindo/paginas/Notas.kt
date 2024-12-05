@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
+import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable

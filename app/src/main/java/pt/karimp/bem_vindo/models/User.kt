@@ -12,5 +12,7 @@ data class User(
     val professor: String = "",
     val progresso: Int = 0,
     val nivel: String = "Básico",
-    val tipo: String = ""
+    val tipo: String = "",
+    val preferenciaHorario: String = "",
+    val Pontuacao: Int = 0,
 )

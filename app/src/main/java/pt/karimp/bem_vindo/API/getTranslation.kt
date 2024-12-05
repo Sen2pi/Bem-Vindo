@@ -25,7 +25,9 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_label" to "Confirmar a eliminação",
             "confirm_deletion_phrase" to "Tem certeza de que deseja eliminar sua conta?",
             "confirm_button" to "Confirmar",
-            "uploading_audio" to "A Fazer o upload do audio..."
+            "uploading_audio" to "A Fazer o upload do audio...",
+            "horario" to "Selecione um horário",
+            "horario_titulo" to "Horário Preferido: "
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -49,7 +51,9 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_label" to "Confirmer l'élimination",
             "confirm_deletion_phrase" to "Êtes-vous certain de vouloir éliminer votre compte ?",
             "confirm_button" to "Confirmer",
-            "uploading_audio" to "Chargement de l'audio en cours..."
+            "uploading_audio" to "Chargement de l'audio en cours...",
+            "horario" to "Sélectionnez un horaire",
+            "horario_titulo" to "Horaire Préféré: "
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -73,7 +77,9 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_label" to "Confirm deletion",
             "confirm_deletion_phrase" to "Are you sure you want to delete your account?",
             "confirm_button" to "Confirm",
-            "uploading_audio" to "Uploading Audio..."
+            "uploading_audio" to "Uploading Audio...",
+            "horario" to "Select a schedule",
+            "horario_titulo" to "Horario Preferido: "
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -97,7 +103,9 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_label" to "Confirmar eliminación",
             "confirm_deletion_phrase" to "¿Está seguro de que desea eliminar su cuenta?",
             "confirm_button" to "Confirmar",
-            "uploading_audio" to "Carregando el audio..."
+            "uploading_audio" to "Carregando el audio..",
+            "horario" to "Seleccione un horario",
+            "horario_titulo" to "Preferred Time: "
         )
         else -> emptyMap()
     }

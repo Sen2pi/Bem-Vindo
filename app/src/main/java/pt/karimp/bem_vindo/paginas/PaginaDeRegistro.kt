@@ -177,7 +177,7 @@ fun PaginaDeRegistro(navController: NavController) {
                                     telemovel = valores[6],
                                     email = valores[7],
                                     password = valores[8],
-                                    progresso = 0
+                                    progresso = 0,
                                 ).onEach { response ->
                                     if (response is AuthResponse.Success) {
                                         firestore.collection("users")
@@ -194,7 +194,9 @@ fun PaginaDeRegistro(navController: NavController) {
                                                     "tipo" to "Aluno", // Sempre "Aluno"
                                                     "progresso" to 0,
                                                     "nivel" to "Básico",
-                                                    "professor" to "aSyWDvIyEM8zUlUWaXAF"
+                                                    "professor" to "aSyWDvIyEM8zUlUWaXAF",
+                                                    "preferenciaHorario" to "",
+                                                    "pontuacao" to 0
                                                 )
                                             )
                                             .addOnSuccessListener {
