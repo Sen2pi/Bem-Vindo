@@ -27,7 +27,8 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_button" to "Confirmar",
             "uploading_audio" to "A Fazer o upload do audio...",
             "horario" to "Selecione um horário",
-            "horario_titulo" to "Horário Preferido: "
+            "horario_titulo" to "Horário Preferido: ",
+            "calendario" to "Adicionar ao calendário",
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -53,7 +54,8 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_button" to "Confirmer",
             "uploading_audio" to "Chargement de l'audio en cours...",
             "horario" to "Sélectionnez un horaire",
-            "horario_titulo" to "Horaire Préféré: "
+            "horario_titulo" to "Horaire Préféré: ",
+            "calendario" to "Ajouter au calendrier",
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -79,7 +81,8 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_button" to "Confirm",
             "uploading_audio" to "Uploading Audio...",
             "horario" to "Select a schedule",
-            "horario_titulo" to "Horario Preferido: "
+            "horario_titulo" to "Prefered Schedule: ",
+            "calendario" to "Add to calendar",
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -105,7 +108,8 @@ fun getTranslations(language: String): Map<String, String> {
             "confirm_button" to "Confirmar",
             "uploading_audio" to "Carregando el audio..",
             "horario" to "Seleccione un horario",
-            "horario_titulo" to "Preferred Time: "
+            "horario_titulo" to "Preferred Time: ",
+            "calendario" to "Adicionar al calendario",
         )
         else -> emptyMap()
     }

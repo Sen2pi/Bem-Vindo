@@ -1,5 +1,6 @@
 package pt.karimp.bem_vindo.paginas
 
+import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.content.Intent
+import android.net.Uri
 import android.provider.CalendarContract
 import java.util.*
 import pt.karimp.bem_vindo.API.LanguageSelector
@@ -44,7 +46,7 @@ fun Agenda(navController: NavController) {
     var aulas by remember { mutableStateOf<List<Aula>>(emptyList()) }
     var horarioPreferido by remember { mutableStateOf("") }
     var isEditingHorario by remember { mutableStateOf(false) }
-    val horarios = listOf("Manhã (09:00-12:00)", "Tarde (14:00-18:00)", "Noite (21:00-00:00)")
+    val horarios = listOf("09:00-12:00", "14:00-18:00", "21:00-00:00")
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var isEditing by remember { mutableStateOf(false) }
@@ -56,10 +58,10 @@ fun Agenda(navController: NavController) {
     val translations =
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
 
-    suspend fun criarSalaGoogleMeet(db: FirebaseFirestore, aula: Aula): String? {
+    suspend fun criarSalaVideochamada(db: FirebaseFirestore, aula: Aula): String? {
         return try {
-            // Simulação da criação de sala do Google Meet
-            val meetLink = "https://meet.google.com/" + UUID.randomUUID().toString().take(10)
+            // Criação de link para sala no Jitsi Meet
+            val meetLink = "https://meet.jit.si/" + UUID.randomUUID().toString().take(10)
 
             // Atualizar Firestore com o link da sala
             val aulaQuery = db.collection("aulas")
@@ -78,7 +80,13 @@ fun Agenda(navController: NavController) {
         }
     }
 
-suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, professorDocumentId: String, aula: Aula) {
+
+    suspend fun marcarPresenca(
+        db: FirebaseFirestore,
+        currentUserId: String,
+        professorDocumentId: String,
+        aula: Aula
+    ) {
         try {
             val aulaQuery = db.collection("aulas")
                 .whereEqualTo("aluno", currentUserId)
@@ -87,11 +95,13 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                 .get()
                 .await()
             aulaQuery.documents.forEach { document ->
-                if(!aula.presencaConfirmada){
-                    db.collection("aulas").document(document.id).update("presencaConfirmada", true).await()
-                    criarSalaGoogleMeet(db, aula)
-                }else{
-                    db.collection("aulas").document(document.id).update("presencaConfirmada", false).await()
+                if (!aula.presencaConfirmada) {
+                    db.collection("aulas").document(document.id).update("presencaConfirmada", true)
+                        .await()
+                    criarSalaVideochamada(db, aula)
+                } else {
+                    db.collection("aulas").document(document.id).update("presencaConfirmada", false)
+                        .await()
                     db.collection("aulas").document(document.id).update("sala", "").await()
                 }
 
@@ -221,7 +231,10 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(5.dp)
-                .background(Color(0xFFA1B8CC), shape = RoundedCornerShape(32.dp)), // Cantos arredondados)
+                .background(
+                    Color(0xFFA1B8CC),
+                    shape = RoundedCornerShape(32.dp)
+                ), // Cantos arredondados)
 
         ) {
             Column(
@@ -245,7 +258,9 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                                     .clickable {
                                         horarioPreferido = horario
                                         isEditingHorario = false
-                                        db.collection("users").document(currentUserDocumentId)
+                                        db
+                                            .collection("users")
+                                            .document(currentUserDocumentId)
                                             .update("preferenciaHorario", horario)
                                         navController.navigate("agenda")
                                     }
@@ -293,7 +308,7 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                 Divider(
                     color = Color(0xFF005B7F),
                     thickness = 1.dp,
-                    modifier = Modifier.padding( 15.dp)
+                    modifier = Modifier.padding(15.dp)
                 )
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(aulas.size) { index ->
@@ -303,7 +318,11 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(modifier = Modifier.weight(1f).padding(start = 15.dp, end = 15.dp)) {
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 15.dp, end = 15.dp)
+                            ) {
                                 Text(
                                     text = formatTimestamp(aula?.dataEHora),
                                     fontWeight = FontWeight.Bold,
@@ -315,34 +334,22 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                                     fontSize = 18.sp,
                                     color = Color(0xFF005B7F)
                                 )
-                            }
-                            Row {
-                                IconButton(onClick = {
-                                    if (aula.presencaConfirmada == true) {
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            val meetLink = criarSalaGoogleMeet(db, aula)
-                                            meetLink?.let {
-                                                navController.navigate("agenda")
-                                            }
-                                        }
-                                    }
-                                }, modifier = Modifier.size(50.dp)) {
-                                    Icon(
-                                        painter = painterResource(id = R.mipmap.ic_meet),
-                                        contentDescription = "Criar Sala Google Meet",
-                                        tint = if (aula.presencaConfirmada == true) Color.Unspecified else Color.Gray
-                                    )
-                                }
-                                IconButton(
+                                Button(
                                     onClick = {
                                         val intent = Intent(Intent.ACTION_INSERT).apply {
                                             data = CalendarContract.Events.CONTENT_URI
-                                            putExtra(CalendarContract.Events.TITLE, "Cours Bem-Vindo Niveau: ${aula.nivel}") // Título do evento
+                                            putExtra(
+                                                CalendarContract.Events.TITLE,
+                                                "Cours Bem-Vindo Niveau: ${aula.nivel}"
+                                            ) // Título do evento
                                             putExtra(
                                                 CalendarContract.Events.DESCRIPTION,
                                                 "Cours Bem-Vindo Niveau: ${aula.nivel}" // Descrição do evento
                                             )
-                                            putExtra(CalendarContract.Events.EVENT_LOCATION, "Online") // Localização do evento
+                                            putExtra(
+                                                CalendarContract.Events.EVENT_LOCATION,
+                                                "Online"
+                                            ) // Localização do evento
                                             // Converter a Timestamp do Firebase para milissegundos
                                             putExtra(
                                                 CalendarContract.EXTRA_EVENT_BEGIN_TIME,
@@ -356,30 +363,61 @@ suspend fun marcarPresenca(db: FirebaseFirestore, currentUserId: String, profess
                                         }
                                         context.startActivity(intent) // Iniciar a Intent
                                     },
-                                    modifier = Modifier.size(50.dp)
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
+                                    Row{
+                                        Icon(
+                                            painter = painterResource(id = R.mipmap.ic_calendar),
+                                            contentDescription = "Adicionar ao Calendário",
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            text = "       ${ translations["calendario"]!! }",
+                                            fontSize = 16.sp,
+                                            color = Color.White,
+                                        )
+                                    }
+                                }
+                            }
+                            Row {
+                                IconButton(onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val meetLink = criarSalaVideochamada(db, aula)
+                                        meetLink?.let {
+                                            // Abrir o link no navegador padrão
+                                            val intent =
+                                                Intent(Intent.ACTION_VIEW, Uri.parse(meetLink))
+                                            context.startActivity(intent)
+                                        }
+                                    }
+                                }, modifier = Modifier.size(50.dp)) {
                                     Icon(
-                                        painter = painterResource(id = R.mipmap.ic_calendar), // Ícone para o botão
-                                        contentDescription = "Adicionar ao Google Agenda",
-                                        tint = Color.Unspecified
+                                        painter = painterResource(id = R.mipmap.ic_camera),
+                                        contentDescription = "Criar Sala Jitsi",
+                                        tint = if (aula.presencaConfirmada == true) Color.Unspecified else Color.Gray
                                     )
                                 }
 
-                                IconButton(onClick = {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        try {
-                                            marcarPresenca(
-                                                db = db,
-                                                currentUserId = currentUserDocumentId,
-                                                professorDocumentId = professorDocumentId,
-                                                aula = aula
-                                            )
-                                        } catch (e: Exception) {
+
+
+                                IconButton(
+                                    onClick = {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            try {
+                                                marcarPresenca(
+                                                    db = db,
+                                                    currentUserId = currentUserDocumentId,
+                                                    professorDocumentId = professorDocumentId,
+                                                    aula = aula
+                                                )
+                                            } catch (e: Exception) {
+                                            }
                                         }
-                                    }
-                                    navController.navigate("agenda")
-                                },
-                                    modifier = Modifier.size(50.dp)) {
+                                        navController.navigate("agenda")
+                                    },
+                                    modifier = Modifier.size(50.dp)
+                                ) {
                                     Icon(
                                         painter = painterResource(
                                             id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty

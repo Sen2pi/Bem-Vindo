@@ -60,8 +60,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.firebase:firebase-database-ktx")
-    implementation ("com.google.api-client:google-api-client-android:1.33.0")
-    implementation ("com.google.api-client:google-api-client-gson:1.33.0")
+
 
 
     //caso queira fazer com o google OAuth ai precisarei do CredentiualManager
