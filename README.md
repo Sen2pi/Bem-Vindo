@@ -9,14 +9,16 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
 - ✅ Login seguro com email e senha.
 - ✅ Recuperação de senha via email.
 - ✅ Opcional: Apagar a conta de usuário.
-- 🔲 Interface de chat com tutor, incluindo envio de mensagens e áudios.
-- 🔲 Página para confirmação de presença nas aulas, com funcionalidades de:
+- ✅ Interface de chat com tutor, incluindo envio de mensagens e áudios.
+- ✅ Página para confirmação de presença nas aulas, com funcionalidades de:
   - ✅ Visualização das próximas aulas.
-  - 🔲 Ajuste de horários de preferência.
-  - 🔲 Cancelamento de aulas.
-  - 🔲 Confirmar a presença.
+  - ✅ Ajuste de horários de preferência.
+  - ✅ Cancelamento de aulas.
+  - ✅ Confirmar a presença.
+  - ✅ integração de criação de sala de VideoChamada Jitsi
+  - ✅ Possibilidade de adicionar ao calendário google
 - 🔲 Suporte a notificações push para lembrar os usuários sobre aulas e mensagens.
-- 🔲 Feedback e avaliação em tempo real durante interações com tutores.
+- ✅ Feedback e avaliação em tempo real durante interações com tutores.
 - 🔲 Jogos de Aprendizagem interativos.
 - 🔲 Sistemas de notas, progresso e níveis.
 
@@ -32,7 +34,7 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
 - ✅ Interface básica e funcional para login e registro usando Jetpack Compose.
 - ✅ Página Inicial com o Dashboard.
 - ✅ Página de Chat com o Tutor.
-- 🔲 Página de Agenda.
+- ✅ Página de Agenda.
 
 ### Funcionalidades Implementadas
 - ✅ Tela de login funcional com validação de email e senha.
@@ -59,10 +61,12 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
 - Chat:
   - ✅ Envio de mensagens.
   - ✅ Envio de áudios
-- Ahgenda:
-  - 🔲 Confirmação de presença
-  - 🔲 Aulas marcadas
-  - 🔲 preferencia de horario
+- Agenda:
+  - ✅ Confirmação de presença
+  - ✅ Aulas marcadas
+  - ✅ Preferencia de horario
+  - ✅ Criação da sala de videoconferencia
+  - ✅ Criação da integração com calendario
 
 
 ## Tecnologias Utilizadas
