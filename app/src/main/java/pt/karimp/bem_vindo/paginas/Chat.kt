@@ -69,7 +69,6 @@ fun Chat(navController: NavController) {
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
     val mediaPlayer = remember { MediaPlayer.create(context, R.raw.message_send_sound) }
 
-    // Função para excluir o arquivo de áudio do Appwrite
     suspend fun deleteAudioFile(fileId: String) {
         try {
             val storage = Storage(appwrite)
