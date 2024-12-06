@@ -1,6 +1,7 @@
 package pt.karimp.bem_vindo.paginas
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -23,13 +24,14 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable
-fun Aprender(navController: NavController) {
+fun SemProf(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
     val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
@@ -56,7 +58,6 @@ fun Aprender(navController: NavController) {
                 professorData = documentSnapshot.toObject(User::class.java)
             } else {
                 error = "Usuário não encontrado"
-                navController.navigate("semprof")
             }
         } catch (e: Exception) {
             error = "Erro ao carregar dados: ${e.message}"
@@ -102,37 +103,28 @@ fun Aprender(navController: NavController) {
         }
     }
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            // Background Image
-            Image(
-                painter = painterResource(id = R.mipmap.azulejo1),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.60f)
-            )
+        topBar = {  // Icons in the top right corner
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
+
                 // Profile Icon
-                IconButton(onClick = { navController.navigate("profile")}) {
+                IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_perfil), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_perfil),
                         contentDescription = "Profile",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
 
@@ -141,37 +133,50 @@ fun Aprender(navController: NavController) {
                 // Logoff Icon
                 IconButton(onClick = { navController.navigate("login") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_logout), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_logout),
                         contentDescription = "Logoff",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
-
-
-
-
             }
+        },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Image(
+            painter = painterResource(id = R.mipmap.azulejo1),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.60f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
             // Content Section
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(5.dp).background(color = Color(0xFFA1B8CC), shape = RoundedCornerShape(12.dp)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Maintenance Icon
                 Image(
-                    painter = painterResource(id = R.mipmap.maintenance_for), // Substitua pelo ID do ícone de manutenção
+                    painter = painterResource(id = R.mipmap.ic_esperar), // Substitua pelo ID do ícone de manutenção
                     contentDescription = "Maintenance Icon",
                     modifier = Modifier
                         .size(120.dp)
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 16.dp, top = 16.dp)
                 )
 
                 // Text Information
                 Text(
-                    text = "Em Desenvolvimento",
+                    text = translations["sem_prof"]!!,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp
@@ -180,10 +185,10 @@ fun Aprender(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Estamos trabalhando nesta funcionalidade. Por favor, volte mais tarde!",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = translations["sem_prof_desc"]!!,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(16.dp),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }

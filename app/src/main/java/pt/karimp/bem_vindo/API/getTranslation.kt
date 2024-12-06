@@ -37,7 +37,10 @@ fun getTranslations(language: String): Map<String, String> {
             "avancado" to "Avançado",
             "niv_mundial" to "Nível Mundial",
             "professional" to "Profissional",
-            "desconhecido" to "Desconhecido"
+            "desconhecido" to "Desconhecido",
+            "apagar_user" to "Apagar a minha conta",
+            "sem_prof" to "Sem Professor",
+            "sem_prof_desc" to "Você não tem um professor. Aguarde que um lhe seja atribuido para poder continuar para esta página."
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -73,7 +76,11 @@ fun getTranslations(language: String): Map<String, String> {
             "avancado" to "Avancé",
             "niv_mundial" to "Niveau Mondial",
             "professional" to "Professionnel",
-            "desconhecido" to "Inconnu"
+            "desconhecido" to "Inconnu",
+            "apagar_user" to "Supprimer mon compte",
+            "sem_prof" to "Sans professeur",
+            "sem_prof_desc" to "Vous n'avez pas de professeur. Veuillez attendre qu'un vous soit attribué pour pouvoir continuer sur cette page."
+
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -109,8 +116,10 @@ fun getTranslations(language: String): Map<String, String> {
             "avancado" to "Advanced",
             "niv_mundial" to "World Level",
             "professional" to "Professional",
-            "desconhecido" to "Unknown"
-
+            "desconhecido" to "Unknown",
+            "apagar_user" to "Delete my account",
+            "sem_prof" to "Without Professor",
+            "sem_prof_desc" to "You don't have a teacher. Please wait for one to be assigned to you in order to proceed to this page."
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -146,7 +155,10 @@ fun getTranslations(language: String): Map<String, String> {
             "avancado" to "Avanzado",
             "niv_mundial" to "Nivel Mundial",
             "professional" to "Profesional",
-            "desconhecido" to "Desconocido"
+            "desconhecido" to "Desconocido",
+            "apagar_user" to "Eliminar mi cuenta",
+            "sem_prof" to "sin profesor",
+            "sem_prof_desc" to "No tienes un profesor. Por favor, espera a que se te asigne uno para poder continuar a esta página."
         )
         else -> emptyMap()
     }

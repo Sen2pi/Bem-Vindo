@@ -9,11 +9,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pt.karimp.bem_vindo.R // Certifique-se de usar o caminho correto para o recurso
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import com.google.android.play.integrity.internal.c
-import pt.karimp.bem_vindo.utils.MessageNotification
 import pt.karimp.bem_vindo.utils.sendNewMessageNotification
 
 

@@ -74,29 +74,10 @@ fun Profile(navController: NavController) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.Black)
-                .padding(innerPadding)
-        ) {
-            // Background Image
-            Image(
-                painter = painterResource(id = R.mipmap.azulejo1),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.60f)
-            )
-
-            // Top Row for Profile, Logoff, and Trash icons
+        topBar = {  // Icons in the top right corner
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -107,6 +88,7 @@ fun Profile(navController: NavController) {
                 )
 
                 Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
+
                 // Profile Icon
                 IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
@@ -117,7 +99,7 @@ fun Profile(navController: NavController) {
                     )
                 }
 
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
 
                 // Logoff Icon
                 IconButton(onClick = { navController.navigate("login") }) {
@@ -129,14 +111,39 @@ fun Profile(navController: NavController) {
                     )
                 }
             }
-
-            // Main Content
+        },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Image(
+            painter = painterResource(id = R.mipmap.azulejo1),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.60f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(5.dp)
+                .background(color = Color(0xFFA1B8CC), shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+            Text(
+                text = translations["profile_title"] ?:"Profil",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF005B7F),
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 15.dp)
+            )
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(vertical = 50.dp)
-                    .padding(25.dp)
+                    .padding(5.dp)
                     .align(Alignment.TopStart)
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -152,19 +159,14 @@ fun Profile(navController: NavController) {
                 } else if (userData != null) {
                     // Editable Profile Information
                     userData?.let { user ->
-                        Text(
-                            text = translations["profile_title"] ?:"Profil",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+
                         TextField(
                             value = user.nome,
                             onValueChange = { userData = userData?.copy(nome = it) },
                             label = { Text(translations["full_name_label"] ?:"Nom Complet", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -184,6 +186,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["address_label"] ?:"Adresse", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -203,6 +206,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["postal_code_label"] ?:"Code Postale", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -223,6 +227,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["city_label"] ?:"Ville", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -242,6 +247,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["nif_label"] ?:"Número D'identification Fiscal", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -261,6 +267,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["nss_label"] ?:"Número de Securité Social", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -280,6 +287,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["phone_number_label"] ?:"Número de Telefone", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -299,6 +307,7 @@ fun Profile(navController: NavController) {
                             label = { Text(translations["email_label"] ?:"Email", color = Color.White) },
                             enabled = isEditing,
                             modifier = Modifier.fillMaxWidth(),
+                            shape =  RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF00405A),
                                 unfocusedContainerColor = Color(0xFF00405A),
@@ -435,43 +444,48 @@ fun Profile(navController: NavController) {
                         ) {
                             Text(text = translations["password_recovery_button"] ?:"Recuperer Mot de Passe")
                         }
+                        // Trash Icon Button at the Bottom
+                        if (showDeleteConfirmation) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteConfirmation = false },
+                                title = { Text(translations["confirm_label"] ?:"Confirmer l'elimination") },
+                                text = { Text(translations["confirm_deletion_phrase"] ?:"Êtes vous certain de vouloir eliminer votre compte?") },
+                                confirmButton = {
+                                    TextButton(onClick = { deleteUser(navController) }) {
+                                        Text(translations["confirm_button"] ?:"Confirmer")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDeleteConfirmation = false }) {
+                                        Text(translations["cancel_button"] ?:"Annuler")
+                                    }
+                                }
+                            )
+                        }
+
+                        // Trash Icon
+                        IconButton(
+                            onClick = { showDeleteConfirmation = true },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Row (
+                                modifier = Modifier.align(Alignment.CenterHorizontally).background(Color.Red).fillMaxWidth().padding(10.dp),
+                                horizontalArrangement =  Arrangement.Center,
+                            ){ Icon(
+                                painter = painterResource(id = R.mipmap.ic_trash),
+                                contentDescription = "Delete User",
+                                modifier = Modifier.size(35.dp),
+                                tint = Color.Unspecified
+                            )
+                                Text(text = translations["apagar_user"]!!, color = Color.White)
+                            }
+
+                        }
                     }
                 }
             }
 
-            // Trash Icon Button at the Bottom
-            if (showDeleteConfirmation) {
-                AlertDialog(
-                    onDismissRequest = { showDeleteConfirmation = false },
-                    title = { Text(translations["confirm_label"] ?:"Confirmer l'elimination") },
-                    text = { Text(translations["confirm_deletion_phrase"] ?:"Êtes vous certain de vouloir eliminer votre compte?") },
-                    confirmButton = {
-                        TextButton(onClick = { deleteUser(navController) }) {
-                            Text(translations["confirm_button"] ?:"Confirmer")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showDeleteConfirmation = false }) {
-                            Text(translations["cancel_button"] ?:"Annuler")
-                        }
-                    }
-                )
-            }
 
-            // Trash Icon
-            IconButton(
-                onClick = { showDeleteConfirmation = true },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.mipmap.ic_trash),
-                    contentDescription = "Delete User",
-                    modifier = Modifier.size(50.dp),
-                    tint = Color.Unspecified
-                )
-            }
         }
     }
 }

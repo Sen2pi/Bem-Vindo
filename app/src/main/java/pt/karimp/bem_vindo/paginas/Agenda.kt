@@ -144,6 +144,7 @@ fun Agenda(navController: NavController) {
                 professorData = documentSnapshot.toObject(User::class.java)
             } else {
                 error = "Usuário não encontrado"
+                navController.navigate("semprof")
             }
         } catch (e: Exception) {
             error = "Erro ao carregar dados: ${e.message}"
@@ -455,7 +456,7 @@ fun Agenda(navController: NavController) {
                     ), // Cantos arredondados)
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
                         items(aulas.size) { index ->
                             val aula = aulas[index]
                             if (aula.dataEHora.toDate().toInstant()

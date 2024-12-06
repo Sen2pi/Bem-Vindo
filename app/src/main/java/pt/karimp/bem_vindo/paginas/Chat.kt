@@ -145,6 +145,7 @@ fun Chat(navController: NavController) {
                 professorData = documentSnapshot.toObject(User::class.java)
             } else {
                 error = "Usuário não encontrado"
+                navController.navigate("semprof")
             }
         } catch (e: Exception) {
             error = "Erro ao carregar dados: ${e.message}"
