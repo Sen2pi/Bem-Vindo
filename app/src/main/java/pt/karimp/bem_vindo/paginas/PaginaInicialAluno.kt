@@ -152,7 +152,7 @@ fun PaginaInicialAluno(navController: NavController) {
                 Spacer(modifier = Modifier.size(50.dp))
                 // Progress Section
                 ProgressSection(progress = userData?.progresso ?: 0, title = translations["progress_title"]!!, nivel = userData?.nivel
-                    ?: "")
+                    ?: "", selectedLanguage)
 
                 // Tutor Section
                 TutorSection(
@@ -174,7 +174,8 @@ fun PaginaInicialAluno(navController: NavController) {
 }
 
 @Composable
-fun ProgressSection(progress: Int, title: String, nivel: String) {
+fun ProgressSection(progress: Int, title: String, nivel: String, selectedLanguage: String) {
+    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -208,27 +209,27 @@ fun ProgressSection(progress: Int, title: String, nivel: String) {
             modifier = Modifier.padding(8.dp)
         ) {
             when (nivel) {
-                "Básico" -> Image(
+                "1" -> Image(
                     painter = painterResource(id = R.mipmap.ic_basico), // Exemplo com o ícone customizado
                     contentDescription = "Básico",
                     modifier = Modifier.size(50.dp)
                 )
-                "Iniciante" -> Image(
+                "2" -> Image(
                     painter = painterResource(id = R.mipmap.ic_iniciante),
                     contentDescription = "Iniciante",
                     modifier = Modifier.size(50.dp)
                 )
-                "Avançado" -> Image(
+                "3" -> Image(
                     painter = painterResource(id = R.mipmap.ic_advanced), // Exemplo
                     contentDescription = "Avançado",
                     modifier = Modifier.size(50.dp)
                 )
-                "Nivel Mundial" -> Image(
+                "4" -> Image(
                     painter = painterResource(id = R.mipmap.ic_mundial), // Exemplo
                     contentDescription = "Nivel Mundial",
                     modifier = Modifier.size(50.dp)
                 )
-                "Profissional" -> Image(
+                "5" -> Image(
                     painter = painterResource(id = R.mipmap.professional_foreground), // Exemplo
                     contentDescription = "Profissional",
                     modifier = Modifier.size(50.dp)
@@ -241,7 +242,7 @@ fun ProgressSection(progress: Int, title: String, nivel: String) {
             }
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "$nivel",
+                text = "${if(nivel == "1" ) translations["basico"] else if(nivel == "2" ) translations["iniciante"] else if(nivel == "3" ) translations["avancado"] else if(nivel == "4" ) translations["niv_mundial"] else if(nivel == "5" ) translations["professional"] else translations["desconhecido"]}",
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFF005B7F)
             )
@@ -251,6 +252,7 @@ fun ProgressSection(progress: Int, title: String, nivel: String) {
 
 @Composable
 fun TutorSection(title: String, tutorName: String, city: String, email: String) {
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),

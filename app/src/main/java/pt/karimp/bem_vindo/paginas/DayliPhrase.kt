@@ -206,7 +206,8 @@ fun DailyPhrase(title: String, chosenLanguage: String, userDocumentID: String) {
                         Icon(
                             imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (isLiked) "like" else "UnLike",
-                            tint = if (isLiked) Color.Red else Color.White
+                            tint = if (isLiked) Color.Red else Color.White,
+                            modifier = Modifier.size(40.dp)
                         )
                     }
                 }

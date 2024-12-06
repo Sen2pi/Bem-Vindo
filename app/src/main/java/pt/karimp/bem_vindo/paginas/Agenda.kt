@@ -25,8 +25,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.CalendarContract
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import com.google.firebase.Timestamp
+import com.google.type.DateTime
 import java.util.*
 import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.API.getTranslations
@@ -35,6 +42,8 @@ import pt.karimp.bem_vindo.models.Aula
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import pt.karimp.bem_vindo.utils.formatTimestamp
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun Agenda(navController: NavController) {
@@ -57,11 +66,21 @@ fun Agenda(navController: NavController) {
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
     val translations =
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    val customFontFamily = FontFamily(
+        Font(R.font.winter_minie, FontWeight.Normal, FontStyle.Normal),
+    )
+
+    fun playSound(resourceId: Int) {
+        val mediaPlayer = MediaPlayer.create(context, resourceId)
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener { it.release() }
+    }
 
     suspend fun criarSalaVideochamada(db: FirebaseFirestore, aula: Aula): String? {
         return try {
             // Criação de link para sala no Jitsi Meet
-            val meetLink = "https://meet.jit.si/" + UUID.randomUUID().toString().take(10)
+            val meetLink =
+                "https://meet.jit.si/bemvindo-aula" + UUID.randomUUID().toString().take(10)
 
             // Atualizar Firestore com o link da sala
             val aulaQuery = db.collection("aulas")
@@ -96,10 +115,12 @@ fun Agenda(navController: NavController) {
                 .await()
             aulaQuery.documents.forEach { document ->
                 if (!aula.presencaConfirmada) {
+                    playSound(R.raw.accept)
                     db.collection("aulas").document(document.id).update("presencaConfirmada", true)
                         .await()
                     criarSalaVideochamada(db, aula)
                 } else {
+                    playSound(R.raw.error)
                     db.collection("aulas").document(document.id).update("presencaConfirmada", false)
                         .await()
                     db.collection("aulas").document(document.id).update("sala", "").await()
@@ -231,215 +252,345 @@ fun Agenda(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(5.dp)
-                .background(
-                    Color(0xFFA1B8CC),
-                    shape = RoundedCornerShape(32.dp)
-                ), // Cantos arredondados)
+
 
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "${translations["horario_titulo"]!! + userData?.preferenciaHorario}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF005B7F),
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+            Column {
+                Row(
+                    modifier = Modifier
+                        .background(
+                            Color(0xFFA1B8CC),
+                            shape = RoundedCornerShape(32.dp)
+                        )
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(15.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_calendar_noday),
+                            contentDescription = "Agenda",
+                            modifier = Modifier.size(100.dp),
+                            tint = Color.Unspecified
+                        )
+                        Text(
+                            text = LocalDate.now().dayOfMonth.toString(), // Dia atual
+                            color = Color(0xFF005B7F),
+                            fontSize = 60.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = customFontFamily,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 30.dp),
+                        )
+                    }
 
-                if (isEditingHorario) {
-                    Column {
-                        horarios.forEach { horario ->
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Text(
+                            text = "${translations["hoje"]!!}",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF005B7F),
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                        Text(
+                            text = "${translations["horario_titulo"]!!}",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF005B7F),
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+
+                        if (isEditingHorario) {
+                            Column {
+                                horarios.forEach { horario ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                horarioPreferido = horario
+                                                isEditingHorario = false
+                                                db
+                                                    .collection("users")
+                                                    .document(currentUserDocumentId)
+                                                    .update("preferenciaHorario", horario)
+                                                navController.navigate("agenda")
+                                            }
+                                            .padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = horarioPreferido == horario,
+                                            onClick = {
+                                                horarioPreferido = horario
+                                                isEditingHorario = false
+                                                db.collection("users")
+                                                    .document(currentUserDocumentId)
+                                                    .update("preferenciaHorario", horario)
+                                                navController.navigate("agenda")
+                                            }
+                                        )
+                                        Text(
+                                            text = horario,
+                                            fontSize = 20.sp,
+                                            color = Color(0xFF005B7F)
+                                        )
+
+                                    }
+                                }
+                            }
+                        } else {
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        horarioPreferido = horario
-                                        isEditingHorario = false
-                                        db
-                                            .collection("users")
-                                            .document(currentUserDocumentId)
-                                            .update("preferenciaHorario", horario)
-                                        navController.navigate("agenda")
-                                    }
+                                    .clickable { isEditingHorario = true }
                                     .padding(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                RadioButton(
-                                    selected = horarioPreferido == horario,
-                                    onClick = {
-                                        horarioPreferido = horario
-                                        isEditingHorario = false
-                                        db.collection("users").document(currentUserDocumentId)
-                                            .update("preferenciaHorario", horario)
-                                        navController.navigate("agenda")
-                                    }
+                                Text(
+                                    text = horarioPreferido.ifEmpty { translations["horario"]!! },
+                                    fontSize = 25.sp,
+                                    color = Color(0xFF005B7F),
                                 )
-                                Text(text = horario, fontSize = 20.sp, color = Color(0xFF005B7F))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    painter = painterResource(id = R.mipmap.ic_edit),
+                                    contentDescription = "Edit",
+                                    modifier = Modifier.size(25.dp),
+                                    tint = Color.Unspecified
+                                )
+                            }
+                        }
+                        LazyColumn() {
+                            items(aulas.size) { index ->
+                                val aula = aulas[index]
+                                if (aula.dataEHora.toDate().toInstant()
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDate() == LocalDate.now()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 15.dp, end = 15.dp)
+                                        ) {
+                                            Text(
+                                                text = "${translations["aula"]} ${aula.dataEHora.toDate().toInstant()
+                                                        .atZone(ZoneId.systemDefault())
+                                                        .toLocalTime().getHour()}:00",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 20.sp,
+                                                color = Color(0xFF005B7F)
+                                            )
+                                            Text(
+                                                text = "${translations["nivel"]!!}: " + "${if(aula.nivel == "1" ) translations["basico"] else if(aula.nivel == "2" ) translations["iniciante"] else if(aula.nivel == "3" ) translations["avancado"] else if(aula.nivel == "4" ) translations["niv_mundial"] else if(aula.nivel == "5" ) translations["professional"] else translations["desconhecido"]}",
+                                                fontSize = 18.sp,
+                                                color = Color(0xFF005B7F)
+                                            )
+                                        }
+                                        IconButton(onClick = {
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                aula.sala.let {
+                                                    // Abrir o link no navegador padrão
+                                                    val intent =
+                                                        Intent(
+                                                            Intent.ACTION_VIEW,
+                                                            Uri.parse(aula.sala)
+                                                        )
+                                                    context.startActivity(intent)
+                                                }
+                                            }
+                                        }, modifier = Modifier.size(50.dp)) {
+                                            Icon(
+                                                painter = painterResource(id = R.mipmap.ic_camera),
+                                                contentDescription = "ala Jitsi",
+                                                tint = if (aula.presencaConfirmada == true) Color.Unspecified else Color.Gray
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        marcarPresenca(
+                                                            db = db,
+                                                            currentUserId = currentUserDocumentId,
+                                                            professorDocumentId = professorDocumentId,
+                                                            aula = aula
+                                                        )
+                                                    } catch (e: Exception) {
+                                                    }
+                                                }
+                                                navController.navigate("agenda")
+                                            },
+                                            modifier = Modifier.size(50.dp)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty
+                                                ),
+                                                contentDescription = "Marcar Presença",
+                                                tint = Color.Unspecified,
+                                            )
+
+                                        }
+
+                                    }
+                                }
 
                             }
                         }
                     }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .clickable { isEditingHorario = true }
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = horarioPreferido.ifEmpty { translations["horario"]!! },
-                            fontSize = 25.sp,
-                            color = Color(0xFF005B7F),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(id = R.mipmap.ic_edit),
-                            contentDescription = "Edit",
-                            modifier = Modifier.size(25.dp),
-                            tint = Color.Unspecified
-                        )
-                    }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-                Divider(
-                    color = Color(0xFF005B7F),
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(15.dp)
-                )
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(aulas.size) { index ->
-                        val aula = aulas[index]
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = 15.dp, end = 15.dp)
+                Column(
+                    modifier = Modifier.background(
+                        Color(0xFFA1B8CC),
+                        shape = RoundedCornerShape(32.dp)
+                    ), // Cantos arredondados)
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(aulas.size) { index ->
+                            val aula = aulas[index]
+                            if (aula.dataEHora.toDate().toInstant()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate() >= LocalDate.now()
                             ) {
-                                Text(
-                                    text = formatTimestamp(aula?.dataEHora),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF005B7F)
-                                )
-                                Text(
-                                    text = "Niveau: " + aula.nivel,
-                                    fontSize = 18.sp,
-                                    color = Color(0xFF005B7F)
-                                )
-                                Button(
-                                    onClick = {
-                                        val intent = Intent(Intent.ACTION_INSERT).apply {
-                                            data = CalendarContract.Events.CONTENT_URI
-                                            putExtra(
-                                                CalendarContract.Events.TITLE,
-                                                "Cours Bem-Vindo Niveau: ${aula.nivel}"
-                                            ) // Título do evento
-                                            putExtra(
-                                                CalendarContract.Events.DESCRIPTION,
-                                                "Cours Bem-Vindo Niveau: ${aula.nivel}" // Descrição do evento
-                                            )
-                                            putExtra(
-                                                CalendarContract.Events.EVENT_LOCATION,
-                                                "Online"
-                                            ) // Localização do evento
-                                            // Converter a Timestamp do Firebase para milissegundos
-                                            putExtra(
-                                                CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                                                aula.dataEHora.toDate().time // Hora de início em milissegundos
-                                            )
-                                            // Opcional: Definir duração do evento (2 horas neste exemplo)
-                                            putExtra(
-                                                CalendarContract.EXTRA_EVENT_END_TIME,
-                                                aula.dataEHora.toDate().time + 2 * 60 * 60 * 1000 // Hora de término
-                                            )
-                                        }
-                                        context.startActivity(intent) // Iniciar a Intent
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row{
-                                        Icon(
-                                            painter = painterResource(id = R.mipmap.ic_calendar),
-                                            contentDescription = "Adicionar ao Calendário",
-                                            tint = Color.Unspecified,
-                                            modifier = Modifier.size(20.dp)
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(start = 15.dp, end = 15.dp)
+                                    ) {
+                                        Text(
+                                            text = formatTimestamp(aula?.dataEHora),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = Color(0xFF005B7F)
                                         )
                                         Text(
-                                            text = "       ${ translations["calendario"]!! }",
-                                            fontSize = 16.sp,
-                                            color = Color.White,
+                                            text = "${translations["nivel"]!!}: " + "${if(aula.nivel == "1" ) translations["basico"] else if(aula.nivel == "2" ) translations["iniciante"] else if(aula.nivel == "3" ) translations["avancado"] else if(aula.nivel == "4" ) translations["niv_mundial"] else if(aula.nivel == "5" ) translations["professional"] else translations["desconhecido"]}",
+                                            fontSize = 18.sp,
+                                            color = Color(0xFF005B7F)
                                         )
-                                    }
-                                }
-                            }
-                            Row {
-                                IconButton(onClick = {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        val meetLink = criarSalaVideochamada(db, aula)
-                                        meetLink?.let {
-                                            // Abrir o link no navegador padrão
-                                            val intent =
-                                                Intent(Intent.ACTION_VIEW, Uri.parse(meetLink))
-                                            context.startActivity(intent)
-                                        }
-                                    }
-                                }, modifier = Modifier.size(50.dp)) {
-                                    Icon(
-                                        painter = painterResource(id = R.mipmap.ic_camera),
-                                        contentDescription = "Criar Sala Jitsi",
-                                        tint = if (aula.presencaConfirmada == true) Color.Unspecified else Color.Gray
-                                    )
-                                }
-
-
-
-                                IconButton(
-                                    onClick = {
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            try {
-                                                marcarPresenca(
-                                                    db = db,
-                                                    currentUserId = currentUserDocumentId,
-                                                    professorDocumentId = professorDocumentId,
-                                                    aula = aula
+                                        Button(
+                                            onClick = {
+                                                val intent = Intent(Intent.ACTION_INSERT).apply {
+                                                    data = CalendarContract.Events.CONTENT_URI
+                                                    putExtra(
+                                                        CalendarContract.Events.TITLE,
+                                                        "Cours Bem-Vindo Niveau: ${aula.nivel}"
+                                                    ) // Título do evento
+                                                    putExtra(
+                                                        CalendarContract.Events.DESCRIPTION,
+                                                        "Cours Bem-Vindo Niveau: ${aula.nivel}" // Descrição do evento
+                                                    )
+                                                    putExtra(
+                                                        CalendarContract.Events.EVENT_LOCATION,
+                                                        "Online"
+                                                    ) // Localização do evento
+                                                    // Converter a Timestamp do Firebase para milissegundos
+                                                    putExtra(
+                                                        CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                                                        aula.dataEHora.toDate().time // Hora de início em milissegundos
+                                                    )
+                                                    // Opcional: Definir duração do evento (2 horas neste exemplo)
+                                                    putExtra(
+                                                        CalendarContract.EXTRA_EVENT_END_TIME,
+                                                        aula.dataEHora.toDate().time + 2 * 60 * 60 * 1000 // Hora de término
+                                                    )
+                                                }
+                                                context.startActivity(intent) // Iniciar a Intent
+                                            },
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Row {
+                                                Icon(
+                                                    painter = painterResource(id = R.mipmap.ic_calendar),
+                                                    contentDescription = "Adicionar ao Calendário",
+                                                    tint = Color.Unspecified,
+                                                    modifier = Modifier.size(20.dp)
                                                 )
-                                            } catch (e: Exception) {
+                                                Text(
+                                                    text = "       ${translations["calendario"]!!}",
+                                                    fontSize = 16.sp,
+                                                    color = Color.White,
+                                                )
                                             }
                                         }
-                                        navController.navigate("agenda")
-                                    },
-                                    modifier = Modifier.size(50.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty
-                                        ),
-                                        contentDescription = "Marcar Presença",
-                                        tint = Color.Unspecified,
-                                    )
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                aula.sala.let {
+                                                    // Abrir o link no navegador padrão
+                                                    val intent =
+                                                        Intent(
+                                                            Intent.ACTION_VIEW,
+                                                            Uri.parse(aula.sala)
+                                                        )
+                                                    context.startActivity(intent)
+                                                }
+                                            }
+                                        }, modifier = Modifier.size(50.dp)) {
+                                            Icon(
+                                                painter = painterResource(id = R.mipmap.ic_camera),
+                                                contentDescription = "ala Jitsi",
+                                                tint = if (aula.presencaConfirmada == true) Color.Unspecified else Color.Gray
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    try {
+                                                        marcarPresenca(
+                                                            db = db,
+                                                            currentUserId = currentUserDocumentId,
+                                                            professorDocumentId = professorDocumentId,
+                                                            aula = aula
+                                                        )
+                                                    } catch (e: Exception) {
+                                                    }
+                                                }
+                                                navController.navigate("agenda")
+                                            },
+                                            modifier = Modifier.size(50.dp)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty
+                                                ),
+                                                contentDescription = "Marcar Presença",
+                                                tint = Color.Unspecified,
+                                            )
 
+                                        }
+                                    }
                                 }
+
+                                Divider(
+                                    color = Color(0xFF005B7F),
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(horizontal = 5.dp)
+                                )
                             }
                         }
-
-                        Divider(
-                            color = Color(0xFF005B7F),
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(horizontal = 5.dp)
-                        )
                     }
                 }
-
             }
         }
+
     }
 }
 

@@ -29,6 +29,15 @@ fun getTranslations(language: String): Map<String, String> {
             "horario" to "Selecione um horário",
             "horario_titulo" to "Horário Preferido: ",
             "calendario" to "Adicionar ao calendário",
+            "hoje" to "Hoje",
+            "aula" to "Aula ás",
+            "nivel" to "Nível",
+            "basico" to "Básico",
+            "iniciante" to "Iniciante",
+            "avancado" to "Avançado",
+            "niv_mundial" to "Nível Mundial",
+            "professional" to "Profissional",
+            "desconhecido" to "Desconhecido"
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -56,6 +65,15 @@ fun getTranslations(language: String): Map<String, String> {
             "horario" to "Sélectionnez un horaire",
             "horario_titulo" to "Horaire Préféré: ",
             "calendario" to "Ajouter au calendrier",
+            "hoje" to "Aujourd'hui",
+            "aula" to "Cour à ",
+            "nivel" to "Niveau",
+            "basico" to "Basique",
+            "iniciante" to "Débutant",
+            "avancado" to "Avancé",
+            "niv_mundial" to "Niveau Mondial",
+            "professional" to "Professionnel",
+            "desconhecido" to "Inconnu"
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -83,6 +101,16 @@ fun getTranslations(language: String): Map<String, String> {
             "horario" to "Select a schedule",
             "horario_titulo" to "Prefered Schedule: ",
             "calendario" to "Add to calendar",
+            "hoje" to "Today",
+            "aula" to "Class at",
+            "nivel" to "Level",
+            "basico" to "Basic",
+            "iniciante" to "Beginner",
+            "avancado" to "Advanced",
+            "niv_mundial" to "World Level",
+            "professional" to "Professional",
+            "desconhecido" to "Unknown"
+
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -110,6 +138,15 @@ fun getTranslations(language: String): Map<String, String> {
             "horario" to "Seleccione un horario",
             "horario_titulo" to "Preferred Time: ",
             "calendario" to "Adicionar al calendario",
+            "hoje" to "Hoy",
+            "aula" to "Aula a las",
+            "nivel" to "Nivel",
+            "basico" to "Básico",
+            "iniciante" to "Principiante",
+            "avancado" to "Avanzado",
+            "niv_mundial" to "Nivel Mundial",
+            "professional" to "Profesional",
+            "desconhecido" to "Desconocido"
         )
         else -> emptyMap()
     }
