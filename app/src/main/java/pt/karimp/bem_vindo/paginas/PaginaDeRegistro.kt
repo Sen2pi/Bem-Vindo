@@ -193,7 +193,7 @@ fun PaginaDeRegistro(navController: NavController) {
                                                     "email" to valores[7],
                                                     "tipo" to "Aluno", // Sempre "Aluno"
                                                     "progresso" to 0,
-                                                    "nivel" to "Básico",
+                                                    "nivel" to "1",
                                                     "professor" to "aSyWDvIyEM8zUlUWaXAF",
                                                     "preferenciaHorario" to "",
                                                     "pontuacao" to 0

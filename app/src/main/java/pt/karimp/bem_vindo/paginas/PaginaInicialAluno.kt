@@ -154,6 +154,7 @@ fun PaginaInicialAluno(navController: NavController) {
                 ProgressSection(progress = userData?.progresso ?: 0, title = translations["progress_title"]!!, nivel = userData?.nivel
                     ?: "", selectedLanguage)
 
+                if(professorData!=null){
                 // Tutor Section
                 TutorSection(
                     title = translations["tutor_title"]!!,
@@ -161,7 +162,7 @@ fun PaginaInicialAluno(navController: NavController) {
                     city = "${professorData?.cidade}",
                     email = "${professorData?.email}"
                 )
-
+            }
                 // Daily Phrase Section
                 DailyPhrase(
                     title = translations["daily_phrase_title"]!!,
