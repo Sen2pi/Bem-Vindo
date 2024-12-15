@@ -19,8 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.auth.AuthResponse
 import pt.karimp.bem_vindo.auth.AuthenticationManager
@@ -33,6 +36,9 @@ fun PaginaDeRedefinicaoSenha(navController: NavController) {
     var successMessage by remember { mutableStateOf<String?>(null) }
     val authenticationManager = remember { AuthenticationManager() }
     val coroutineScope = rememberCoroutineScope()
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations =
+        getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -46,28 +52,32 @@ fun PaginaDeRedefinicaoSenha(navController: NavController) {
                 .alpha(0.60f)
         )
         Image(
-            painter = painterResource(id = R.mipmap.logo2),
+            painter = painterResource(id = R.mipmap.logo_final1),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            alignment = Alignment.BottomCenter,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .fillMaxSize()
+                .padding(50.dp).size(150.dp)
         )
 
-        // Ícone no canto superior esquerdo
-        IconButton(
-            onClick = { navController.navigate("login") },
+        Row(
             modifier = Modifier
-                .padding(35.dp)
-                .align(Alignment.TopStart)
+                .padding(top = 30.dp, end = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            // Language Selector
+            LanguageSelector(
+                selectedLanguage = selectedLanguage,
+                onLanguageSelected = { selectedLanguage = it }
+            )
+            IconButton(onClick = { navController.navigate("login") }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Voltar ao login",
-                    tint = Color(0xFF00405A)
+                    painter = painterResource(id = R.mipmap.ic_logout),
+                    contentDescription = "Logoff",
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.Unspecified
                 )
             }
         }
@@ -90,15 +100,17 @@ fun PaginaDeRedefinicaoSenha(navController: NavController) {
                 },
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF00405A),
-                    unfocusedContainerColor = Color(0xFF00405A),
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedLeadingIconColor = Color.White,
-                    unfocusedLeadingIconColor = Color.White,
-                    focusedLabelColor = Color.White,
+                    focusedContainerColor = Color(0xFFA1B8CC),    // Background when focused
+                    unfocusedContainerColor = Color(0xFFA1B8CC),  // Background when not focused
+                    focusedBorderColor = Color.DarkGray,    // Border color when focused
+                    unfocusedBorderColor = Color.LightGray, // Border color when not focused
+                    focusedTextColor = Color(0xFF00405A),   // Text color when focused
+                    unfocusedTextColor = Color(0xFF00405A), // Text color when not focuse
+                    focusedLeadingIconColor = Color(0xFF00405A),    // Leading icon color when focused
+                    unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
+                    focusedTrailingIconColor = Color(0xFF00405A),   // Optional: Customize trailing icon color
+                    unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
+                    focusedLabelColor = Color(0xFF00405A),
                     unfocusedLabelColor = Color.White,
                 )
             )
@@ -111,7 +123,7 @@ fun PaginaDeRedefinicaoSenha(navController: NavController) {
                         authenticationManager.redefinirSenha(email).collect { response ->
                             when (response) {
                                 is AuthResponse.Success -> {
-                                    successMessage = "Email enviado com sucesso!"
+                                    successMessage = "${translations["password_mail"]}"
                                     errorMessage = null
                                     navController.navigate("login")
                                 }
@@ -127,13 +139,16 @@ fun PaginaDeRedefinicaoSenha(navController: NavController) {
                     containerColor = Color(0xFF00405A),
                     contentColor = Color.White
                 ),
-                modifier = Modifier.height(50.dp),
+                modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp)
             ) {
                 Text(
-                    text = "Redefinir senha",
+                    text = "${translations["password_recovery_button"]}",
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
                 )
             }
 

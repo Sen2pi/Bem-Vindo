@@ -1,6 +1,7 @@
 package pt.karimp.bem_vindo.paginas
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -119,6 +120,18 @@ fun Notas(navController: NavController) {
                     .fillMaxSize()
                     .alpha(0.60f)
             )
+            Row (modifier = Modifier
+                .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
+                horizontalArrangement = Arrangement.Center){
+                Image(
+                    painter = painterResource(id = R.mipmap.logo_final1),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.TopCenter,
+                    modifier = Modifier
+                        .size(75.dp)
+                )
+            }
             Row(
                 modifier = Modifier
                     .padding(16.dp)

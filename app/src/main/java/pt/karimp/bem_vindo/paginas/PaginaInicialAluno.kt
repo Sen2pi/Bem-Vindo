@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -83,11 +84,24 @@ fun PaginaInicialAluno(navController: NavController) {
 
     Scaffold(
         topBar = {  // Icons in the top right corner
+            Row (modifier = Modifier
+                .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
+            horizontalArrangement = Arrangement.Center){
+                Image(
+                    painter = painterResource(id = R.mipmap.logo_final1),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.TopCenter,
+                    modifier = Modifier
+                        .size(75.dp)
+                )
+            }
             Row(
                 modifier = Modifier
                     .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+
             ) {
                 // Language Selector
                 LanguageSelector(

@@ -75,6 +75,18 @@ fun Profile(navController: NavController) {
 
     Scaffold(
         topBar = {  // Icons in the top right corner
+            Row (modifier = Modifier
+                .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
+                horizontalArrangement = Arrangement.Center){
+                Image(
+                    painter = painterResource(id = R.mipmap.logo_final1),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.TopCenter,
+                    modifier = Modifier
+                        .size(75.dp)
+                )
+            }
             Row(
                 modifier = Modifier
                     .padding(top = 30.dp, end = 15.dp)

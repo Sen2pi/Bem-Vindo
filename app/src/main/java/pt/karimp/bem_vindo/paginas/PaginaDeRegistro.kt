@@ -22,32 +22,37 @@ import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.auth.AuthResponse
 import pt.karimp.bem_vindo.auth.AuthenticationManager
 
 @Composable
 fun PaginaDeRegistro(navController: NavController) {
-    val campos = listOf(
-        "Nom Complet",
-        "Numéro de Sécurité Social",
-        "NIF",
-        "Adresse",
-        "Ville",
-        "Code Postal",
-        "Téléphone",
-        "Email",
-        "Mot de Pass"
-    )
 
+
+
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations =
+        getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    val firestore = FirebaseFirestore.getInstance() // Inicializa o Firestore
+    val campos = listOf(
+        "${translations["full_name_label"]}",
+        "${translations["nss_label"]}",
+        "${translations["nif_label"]}",
+        "${translations["address_label"]}",
+        "${translations["city_label"]}",
+        "${translations["postal_code_label"]}",
+        "${translations["phone_number_label"]}",
+        "${translations["email_label"]}",
+        "${translations["password"]}"
+    )
     val valores = remember { mutableStateListOf(*Array(campos.size) { "" }) }
     val errorMessages = remember { mutableStateListOf(*Array(campos.size) { "" }) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val authenticationManager = remember { AuthenticationManager() }
     val coroutineScope = rememberCoroutineScope()
-
-    val firestore = FirebaseFirestore.getInstance() // Inicializa o Firestore
-
     // Função de validação
     fun validateForm(): Boolean {
         val errors = mutableMapOf<Int, String>()
@@ -109,7 +114,39 @@ fun PaginaDeRegistro(navController: NavController) {
                 .fillMaxSize()
                 .alpha(0.60f)
         )
-
+        Row (modifier = Modifier
+            .padding(top = 30.dp)
+            .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center){
+            Image(
+                painter = painterResource(id = R.mipmap.logo_final1),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.TopCenter,
+                modifier = Modifier
+                    .size(75.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp, end = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            // Language Selector
+            LanguageSelector(
+                selectedLanguage = selectedLanguage,
+                onLanguageSelected = { selectedLanguage = it }
+            )
+            IconButton(onClick = { navController.navigate("login") }) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_logout),
+                    contentDescription = "Logoff",
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.Unspecified
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -136,14 +173,18 @@ fun PaginaDeRegistro(navController: NavController) {
                         visualTransformation = if (label == "Mot de Pass") PasswordVisualTransformation() else VisualTransformation.None,
                         shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFF00405A),
-                            unfocusedContainerColor = Color(0xFF00405A),
-                            focusedBorderColor = Color.DarkGray,
-                            unfocusedBorderColor = Color.LightGray,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedLabelColor = Color.White,
-                            unfocusedLabelColor = Color.White
+                            focusedContainerColor = Color(0xFFA1B8CC),    // Background when focused
+                            unfocusedContainerColor = Color(0xFFA1B8CC),  // Background when not focused
+                            focusedBorderColor = Color.DarkGray,    // Border color when focused
+                            unfocusedBorderColor = Color.LightGray, // Border color when not focused
+                            focusedTextColor = Color(0xFF00405A),   // Text color when focused
+                            unfocusedTextColor = Color(0xFF00405A), // Text color when not focuse
+                            focusedLeadingIconColor = Color(0xFF00405A),    // Leading icon color when focused
+                            unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
+                            focusedTrailingIconColor = Color(0xFF00405A),   // Optional: Customize trailing icon color
+                            unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
+                            focusedLabelColor = Color(0xFF00405A),
+                            unfocusedLabelColor = Color.White,
                         )
                     )
 

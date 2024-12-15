@@ -56,33 +56,35 @@ fun PaginaDeLogin(navController: NavController) {
                 .alpha(0.60f)
         )
         Image(
-            painter = painterResource(id = R.mipmap.logo2),
+            painter = painterResource(id = R.mipmap.logo_final1),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            alignment = Alignment.BottomCenter,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .fillMaxSize()
+                .padding(50.dp).size(150.dp)
         )
-         // Icons in the top right corner
-            Row(
-                modifier = Modifier
-                    .padding(top = 30.dp, end = 15.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                // Language Selector
-                LanguageSelector(
-                    selectedLanguage = selectedLanguage,
-                    onLanguageSelected = { selectedLanguage = it }
-                )
-            }
+        // Icons in the top right corner
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp, end = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            // Language Selector
+            LanguageSelector(
+                selectedLanguage = selectedLanguage,
+                onLanguageSelected = { selectedLanguage = it }
+            )
+        }
         // Conteúdo da página
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Bottom
         ) {
             OutlinedTextField(
                 value = email,
