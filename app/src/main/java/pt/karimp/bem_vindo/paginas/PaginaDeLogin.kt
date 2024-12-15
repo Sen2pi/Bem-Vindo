@@ -21,9 +21,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import pt.karimp.bem_vindo.API.LanguageSelector
+import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.auth.AuthResponse
 import pt.karimp.bem_vindo.auth.AuthenticationManager
@@ -36,6 +39,9 @@ fun PaginaDeLogin(navController: NavController) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val authenticationManager = remember { AuthenticationManager() }
     val coroutineScope = rememberCoroutineScope()
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations =
+        getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -57,7 +63,19 @@ fun PaginaDeLogin(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
         )
-
+         // Icons in the top right corner
+            Row(
+                modifier = Modifier
+                    .padding(top = 30.dp, end = 15.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+            }
         // Conteúdo da página
         Column(
             modifier = Modifier
@@ -77,18 +95,19 @@ fun PaginaDeLogin(navController: NavController) {
                 },
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF00405A), // Background when focused
-                    unfocusedContainerColor = Color(0xFF00405A),  // Background when not focused
+                    focusedContainerColor = Color(0xFFA1B8CC),    // Background when focused
+                    unfocusedContainerColor = Color(0xFFA1B8CC),  // Background when not focused
                     focusedBorderColor = Color.DarkGray,    // Border color when focused
                     unfocusedBorderColor = Color.LightGray, // Border color when not focused
-                    focusedTextColor = Color.White,         // Text color when focused
-                    unfocusedTextColor = Color.White,        // Text color when not focuse
-                    focusedLeadingIconColor = Color.White,    // Leading icon color when focused
+                    focusedTextColor = Color(0xFF00405A),   // Text color when focused
+                    unfocusedTextColor = Color(0xFF00405A), // Text color when not focuse
+                    focusedLeadingIconColor = Color(0xFF00405A),    // Leading icon color when focused
                     unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
-                    focusedTrailingIconColor = Color.White,   // Optional: Customize trailing icon color
+                    focusedTrailingIconColor = Color(0xFF00405A),   // Optional: Customize trailing icon color
                     unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White,      // Text color when not focused
+                    focusedLabelColor = Color(0xFF00405A),
+                    unfocusedLabelColor = Color.White,
+
                 )
             )
 
@@ -99,7 +118,7 @@ fun PaginaDeLogin(navController: NavController) {
                 onValueChange = { senha = it },
                 label = {
                     Text(
-                        text = "Mot de Pass",
+                        text = "${translations["password"]}",
 
                         )
                 },
@@ -111,17 +130,17 @@ fun PaginaDeLogin(navController: NavController) {
                 visualTransformation = PasswordVisualTransformation(),
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF00405A), // Background when focused
-                    unfocusedContainerColor = Color(0xFF00405A),  // Background when not focused
+                    focusedContainerColor = Color(0xFFA1B8CC),    // Background when focused
+                    unfocusedContainerColor = Color(0xFFA1B8CC),  // Background when not focused
                     focusedBorderColor = Color.DarkGray,    // Border color when focused
                     unfocusedBorderColor = Color.LightGray, // Border color when not focused
-                    focusedTextColor = Color.White,         // Text color when focused
-                    unfocusedTextColor = Color.White,        // Text color when not focuse
-                    focusedLeadingIconColor = Color.White,    // Leading icon color when focused
+                    focusedTextColor = Color(0xFF00405A),   // Text color when focused
+                    unfocusedTextColor = Color(0xFF00405A), // Text color when not focuse
+                    focusedLeadingIconColor = Color(0xFF00405A),    // Leading icon color when focused
                     unfocusedLeadingIconColor = Color.White,  // Leading icon color when not focused
-                    focusedTrailingIconColor = Color.White,   // Optional: Customize trailing icon color
+                    focusedTrailingIconColor = Color(0xFF00405A),   // Optional: Customize trailing icon color
                     unfocusedTrailingIconColor = Color.White, // Optional: Customize trailing icon color
-                    focusedLabelColor = Color.White,
+                    focusedLabelColor = Color(0xFF00405A),
                     unfocusedLabelColor = Color.White,
                 )
             )
@@ -140,41 +159,65 @@ fun PaginaDeLogin(navController: NavController) {
                     }.launchIn(coroutineScope)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00405A),
+                    containerColor = Color(0xFF136C1A),
                     contentColor = Color.White
                 ),
-                modifier = Modifier.height(50.dp),
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                Text(
-                    text = "Se Connecter",
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate("register") },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00405A), // Background color of the button
-                    contentColor = Color.White          // Text/Icon color inside the button
-                ),
                 modifier = Modifier
-                    .height(50.dp),
+                    .height(75.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp)
             ) {
                 Text(
-                    text = "S'enregistrer",
+                    text = "${translations["login_button"]}",
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 19.sp
                 )
             }
+
+
             Spacer(modifier = Modifier.height(16.dp))
 
+            Row (modifier = Modifier.fillMaxWidth()){
+                Button(
+                    onClick = { navController.navigate("register") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8E1213), // Background color of the button
+                        contentColor = Color.White          // Text/Icon color inside the button
+                    ),
+                    modifier = Modifier
+                        .height(75.dp)
+                        .width(200.dp),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(
+                        text = "${translations["register_button"]}",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
 
+                Button(
+                    onClick = { navController.navigate("resetPassword") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF99812A), // Cor de fundo do botão
+                        contentColor = Color.White          // Cor do texto/ícone dentro do botão
+                    ),
+                    modifier = Modifier
+                        .height(75.dp)
+                        .width(200.dp),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(
+                        text = "${translations["password_recovery_button"]}",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 19.sp,
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -191,38 +234,4 @@ fun PaginaDeLogin(navController: NavController) {
         }
 
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        // Adicionar outros elementos aqui, se necessário
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(50.dp), // Alinha ao fundo da tela
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = { navController.navigate("resetPassword") },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00405A), // Cor de fundo do botão
-                    contentColor = Color.White          // Cor do texto/ícone dentro do botão
-                ),
-                modifier = Modifier
-                    .height(50.dp),
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                Text(
-                    text = "Mot de passe oublié?",
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-
 }

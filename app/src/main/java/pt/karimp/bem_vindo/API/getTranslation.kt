@@ -40,7 +40,10 @@ fun getTranslations(language: String): Map<String, String> {
             "desconhecido" to "Desconhecido",
             "apagar_user" to "Apagar a minha conta",
             "sem_prof" to "Sem Professor",
-            "sem_prof_desc" to "Você não tem um professor. Aguarde que um lhe seja atribuido para poder continuar para esta página."
+            "sem_prof_desc" to "Você não tem um professor. Aguarde que um lhe seja atribuido para poder continuar para esta página.",
+            "login_button" to "Entrar",
+            "register_button" to "Registrar-se",
+            "password" to "Palavra-passe",
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -79,7 +82,10 @@ fun getTranslations(language: String): Map<String, String> {
             "desconhecido" to "Inconnu",
             "apagar_user" to "Supprimer mon compte",
             "sem_prof" to "Sans professeur",
-            "sem_prof_desc" to "Vous n'avez pas de professeur. Veuillez attendre qu'un vous soit attribué pour pouvoir continuer sur cette page."
+            "sem_prof_desc" to "Vous n'avez pas de professeur. Veuillez attendre qu'un vous soit attribué pour pouvoir continuer sur cette page.",
+            "login_button" to "Se Connecter",
+            "register_button" to "S'inscrire",
+            "password" to "Mot de passe"
 
         )
         "en" -> mapOf(
@@ -119,7 +125,10 @@ fun getTranslations(language: String): Map<String, String> {
             "desconhecido" to "Unknown",
             "apagar_user" to "Delete my account",
             "sem_prof" to "Without Professor",
-            "sem_prof_desc" to "You don't have a teacher. Please wait for one to be assigned to you in order to proceed to this page."
+            "sem_prof_desc" to "You don't have a teacher. Please wait for one to be assigned to you in order to proceed to this page.",
+            "login_button" to "Login",
+            "register_button" to "Register",
+            "password" to "Password"
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -158,7 +167,10 @@ fun getTranslations(language: String): Map<String, String> {
             "desconhecido" to "Desconocido",
             "apagar_user" to "Eliminar mi cuenta",
             "sem_prof" to "sin profesor",
-            "sem_prof_desc" to "No tienes un profesor. Por favor, espera a que se te asigne uno para poder continuar a esta página."
+            "sem_prof_desc" to "No tienes un profesor. Por favor, espera a que se te asigne uno para poder continuar a esta página.",
+            "login_button" to "Iniciar Sesión",
+            "register_button" to "Registrarse",
+            "password" to "Contraseña"
         )
         else -> emptyMap()
     }
