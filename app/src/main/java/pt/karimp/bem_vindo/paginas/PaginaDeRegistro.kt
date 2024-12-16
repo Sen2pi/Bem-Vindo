@@ -237,7 +237,8 @@ fun PaginaDeRegistro(navController: NavController) {
                                                     "nivel" to "1",
                                                     "professor" to "aSyWDvIyEM8zUlUWaXAF",
                                                     "preferenciaHorario" to "",
-                                                    "pontuacao" to 0
+                                                    "pontuacao" to 0,
+                                                    "aprender" to 0,
                                                 )
                                             )
                                             .addOnSuccessListener {

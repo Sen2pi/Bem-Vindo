@@ -246,7 +246,7 @@ fun Chat(navController: NavController) {
         bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        if(professorData == null){
+        if(userData?.professor == ""){
             navController.navigate("semprof")
         }
         Image(

@@ -44,7 +44,8 @@ fun getTranslations(language: String): Map<String, String> {
             "login_button" to "Entrar",
             "register_button" to "Registrar-se",
             "password" to "Palavra-passe",
-            "password_mail" to "Email enviado com sucesso!"
+            "password_mail" to "Email enviado com sucesso!",
+            "jogo_complete" to "Complete a frase: "
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -87,7 +88,8 @@ fun getTranslations(language: String): Map<String, String> {
             "login_button" to "Se Connecter",
             "register_button" to "S'inscrire",
             "password" to "Mot de passe",
-            "password_mail" to "Email envoyé avec succès!"
+            "password_mail" to "Email envoyé avec succès!",
+            "jogo_complete" to "Completer la phrase: "
 
         )
         "en" -> mapOf(
@@ -131,7 +133,8 @@ fun getTranslations(language: String): Map<String, String> {
             "login_button" to "Login",
             "register_button" to "Register",
             "password" to "Password",
-            "password_mail" to "Password sent successfully!"
+            "password_mail" to "Password sent successfully!",
+            "jogo_complete" to "Complete the phrase: "
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -174,7 +177,8 @@ fun getTranslations(language: String): Map<String, String> {
             "login_button" to "Iniciar Sesión",
             "register_button" to "Registrarse",
             "password" to "Contraseña",
-            "password_mail" to "Correo electrónico enviado con éxito!"
+            "password_mail" to "Correo electrónico enviado con éxito!",
+            "jogo_complete" to "Completa la frase: "
         )
         else -> emptyMap()
     }

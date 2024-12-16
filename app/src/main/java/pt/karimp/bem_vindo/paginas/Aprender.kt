@@ -1,129 +1,117 @@
 package pt.karimp.bem_vindo.paginas
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+// Compose Foundation
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.*
+
+// Compose Material3
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.ButtonDefaults.buttonColors
+
+// Compose Runtime
+import androidx.compose.runtime.*
+
+// Compose UI
+import androidx.compose.ui.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.*
+import androidx.compose.ui.res.painterResource
+
+// Firebase Imports
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+// Navigation
+import androidx.navigation.NavController
+
+// Coroutines
 import kotlinx.coroutines.tasks.await
+
+// Meu Projeto
 import pt.karimp.bem_vindo.API.getTranslations
+import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.R
+import pt.karimp.bem_vindo.models.Nivel
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable
 fun Aprender(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
-    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
-    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
-    val currentUser = auth.currentUser
-    val userEmail = FirebaseAuth.getInstance().currentUser?.email
-    var currentUserDocumentId by remember { mutableStateOf("") }
-    var userData by remember { mutableStateOf<User?>(null) }
-    var professorDocumentId by remember { mutableStateOf("") }
-    var professorData by remember { mutableStateOf<User?>(null) }
     val db = FirebaseFirestore.getInstance()
+    var currentUserDocumentId by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var nivelDocumentId by remember { mutableStateOf("") }
+    // Estados
+    var niveis by remember { mutableStateOf<List<Nivel>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
-    var isEditing by remember { mutableStateOf(false) }
-    LaunchedEffect(professorDocumentId) {
-        try {
-            // Chamada assíncrona com corrotinas
-            val documentSnapshot = FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(professorDocumentId)
-                .get()
-                .await()  // Usando .await() para esperar o resultado de forma suspensa
+    var userData by remember { mutableStateOf<User?>(null) }
+    var professorData by remember { mutableStateOf<User?>(null) }
+    var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
+    val translations =
+        getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    val currentUser = auth.currentUser
+    val currentEmail = currentUser?.email
 
-            if (documentSnapshot.exists()) {
-                professorData = documentSnapshot.toObject(User::class.java)
-            } else {
-                error = "Usuário não encontrado"
-                navController.navigate("semprof")
+    // Função para carregar dados do usuário e níveis
+    LaunchedEffect(Unit) {
+        try {
+            loading = true
+
+            // Carregar dados do usuário
+            if (currentEmail != null) {
+                val userDoc = db.collection("users")
+                    .whereEqualTo("email", currentEmail)
+                    .get()
+                    .await()
+                    .documents
+                    .firstOrNull()
+
+                if (userDoc != null) {
+                    currentUserDocumentId = userDoc.id
+                    userData = userDoc.toObject(User::class.java)
+                    val professorId = userDoc.getString("professor")
+
+                    // Carregar dados do professor (se existir)
+                    if (!professorId.isNullOrEmpty()) {
+                        val professorDoc = db.collection("users")
+                            .document(professorId)
+                            .get()
+                            .await()
+                        professorData = professorDoc.toObject(User::class.java)
+                    }
+                }
             }
+
+            // Carregar níveis
+            val querySnapshot = db.collection("niveis").get().await()
+            niveis = querySnapshot.documents
+                .mapNotNull { it.toObject(Nivel::class.java) }
+                .sortedBy { it.nivel } // Ordena os níveis pelo número
         } catch (e: Exception) {
             error = "Erro ao carregar dados: ${e.message}"
         } finally {
             loading = false
         }
     }
-    LaunchedEffect(Unit) {
-        if (currentUser != null) {
-            try {
-                val userDocSnapshot =
-                    db.collection("users").whereEqualTo("email", currentUser.email).get().await()
-                if (!userDocSnapshot.isEmpty) {
-                    val userDoc = userDocSnapshot.documents.first()
-                    currentUserDocumentId = userDoc.id
-                    professorDocumentId = userDoc.getString("professor") ?: ""
-                    val userType = userDoc.getString("tipo") ?: ""
 
-                    if (userType == "Aluno") {
-
-                        db.collection("users")
-                            .whereEqualTo("email", userEmail)
-                            .get()
-                            .addOnSuccessListener { querySnapshot ->
-                                if (!querySnapshot.isEmpty) {
-                                    val document = querySnapshot.documents.first()
-                                    userData = document.toObject(User::class.java)
-                                } else {
-                                    error = "Usuário não encontrado"
-                                }
-                                loading = false
-                            }
-                            .addOnFailureListener {
-                                error = "Erro ao carregar dados"
-                                loading = false
-                            }
-                        // Carregar mensagens que envolvem o aluno ou o professor
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            // Background Image
-            Image(
-                painter = painterResource(id = R.mipmap.azulejo1),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+        topBar = {  // Icons in the top right corner
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.60f)
-            )
-            Row (modifier = Modifier
-                .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
-                horizontalArrangement = Arrangement.Center){
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFA1B8CC)),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Image(
                     painter = painterResource(id = R.mipmap.logo_final1),
                     contentDescription = null,
@@ -135,17 +123,25 @@ fun Aprender(navController: NavController) {
             }
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 30.dp, end = 15.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Language Selector
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = { selectedLanguage = it }
+                )
+
+                Spacer(modifier = Modifier.width(5.dp)) // Espaçamento entre os ícones
+
                 // Profile Icon
-                IconButton(onClick = { navController.navigate("profile")}) {
+                IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_perfil), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_perfil),
                         contentDescription = "Profile",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
 
@@ -154,52 +150,168 @@ fun Aprender(navController: NavController) {
                 // Logoff Icon
                 IconButton(onClick = { navController.navigate("login") }) {
                     Icon(
-                        painter = painterResource(id = R.mipmap.ic_logout), // Certifique-se de ter a imagem
+                        painter = painterResource(id = R.mipmap.ic_logout),
                         contentDescription = "Logoff",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified // Definindo o ícone para usar sua cor original
+                        tint = Color.Unspecified
                     )
                 }
-
-
-
-
             }
-            // Content Section
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Maintenance Icon
-                Image(
-                    painter = painterResource(id = R.mipmap.maintenance_for), // Substitua pelo ID do ícone de manutenção
-                    contentDescription = "Maintenance Icon",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .padding(bottom = 16.dp)
-                )
-
-                // Text Information
-                Text(
-                    text = "Em Desenvolvimento",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
-                    ),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Estamos trabalhando nesta funcionalidade. Por favor, volte mais tarde!",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
+        },
+        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Image(
+            painter = painterResource(id = R.mipmap.azulejo1),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.60f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(5.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            when {
+                loading -> CircularProgressIndicator()
+                error != null -> Text(error ?: "Erro desconhecido", color = Color.Red)
+                niveis.isNotEmpty() -> NivelList(navController, niveis, userData)
+                else -> Text("Nenhum nível encontrado.", color = Color.Gray)
             }
         }
     }
 }
+
+@Composable
+fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?) {
+    val gridColumns = 4 // Número de colunas na grid
+    val cellSize = 90.dp // Tamanho de cada botão
+    val spacing = 20.dp // Espaçamento entre os itens
+    val db = FirebaseFirestore.getInstance()
+
+    // State para armazenar os documentos de nível carregados
+    var nivelDocs by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
+
+    // Efeito para carregar dados do Firestore
+    LaunchedEffect(niveis) {
+        // Fetch os documentos do Firestore de uma vez
+        val docMap = niveis.associate { nivel ->
+            val nivelDoc = db.collection("niveis")
+                .whereEqualTo("nivel", nivel.nivel)
+                .get()
+                .await()
+                .documents
+                .firstOrNull()
+            nivel.nivel to nivelDoc?.id.orEmpty() // Associe o nível ao seu ID
+        }
+        nivelDocs = docMap // Atualize o estado com os IDs dos documentos
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF005B7F), shape = MaterialTheme.shapes.medium)
+            .padding(16.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            niveis.forEachIndexed { index, _ ->
+                if (index + 1 < niveis.size) {
+                    val currentRow = index / gridColumns
+                    val currentColumn = index % gridColumns
+                    val nextRow = (index + 1) / gridColumns
+                    val nextColumn = (index + 1) % gridColumns
+
+                    val startX =
+                        (currentColumn * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
+                    val startY = (currentRow * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
+
+                    val endX = (nextColumn * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
+                    val endY = (nextRow * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
+
+                    drawLine(
+                        color = Color(0xFFA1B8CC),
+                        start = androidx.compose.ui.geometry.Offset(startX, startY),
+                        end = androidx.compose.ui.geometry.Offset(endX, endY),
+                        strokeWidth = 15f
+                    )
+                }
+            }
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(gridColumns),
+            verticalArrangement = Arrangement.spacedBy(spacing),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(niveis) { nivel ->
+                val completado = (userData?.aprender ?: 0) >= nivel.nivel
+                val nivelDocId = nivelDocs[nivel.nivel] // Obtenha o ID do documento carregado
+                NivelItem(nivel, completado, userData) {
+                    if (nivelDocId != null) {
+                        navController.navigate("nivel/$nivelDocId")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun NivelItem(nivel: Nivel, completado: Boolean, userData: User?, onClick: () -> Unit) {
+    val desbloqueado = (userData?.aprender ?: 0) + 1 >= nivel.nivel
+    val corBotao = when {
+        completado -> Color(0xFF4CAF50) // Verde se completado
+        desbloqueado -> Color(0xFFE9BD0D) // Amarelo se desbloqueado
+        else -> Color(0xFFB0BEC5) // Cinza se bloqueado
+    }
+
+    Box() {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                onClick = { if (desbloqueado) onClick() },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = corBotao,
+                    disabledContainerColor = corBotao
+                ),
+                modifier = Modifier.size(70.dp),
+                enabled = desbloqueado // Botão desativado se bloqueado
+            ) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_nata),
+                    contentDescription = "Nível ${nivel.nivel}",
+                    tint = Color.Unspecified,
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Nível ${nivel.nivel}",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (desbloqueado) Color(0xFFA1B8CC) else Color.Gray
+            )
+        }
+        // Ícone do jogador apenas se desbloqueado (amarelo)
+        if (desbloqueado && !completado) {
+            Icon(
+                painter = painterResource(id = R.mipmap.ic_player), // Ícone do jogador
+                contentDescription = "Jogador",
+                modifier = Modifier
+                    .size(50.dp)
+                    .align(Alignment.CenterEnd),
+                tint = Color.Unspecified // Mesmo tom de amarelo
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+    }
+}
+

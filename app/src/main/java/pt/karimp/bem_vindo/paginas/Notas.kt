@@ -105,6 +105,9 @@ fun Notas(navController: NavController) {
         bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
+        if(userData?.professor == ""){
+            navController.navigate("semprof")
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()

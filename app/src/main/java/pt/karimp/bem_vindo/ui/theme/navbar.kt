@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import pt.karimp.bem_vindo.utils.sendNewMessageNotification
+import pt.karimp.bem_vindo.utils.sendUnmarkedClassNotification
 
 
 fun getUnreadMessages(userId: String, onMessagesCountChanged: (Int) -> Unit) {
@@ -32,9 +33,28 @@ fun getUnreadMessages(userId: String, onMessagesCountChanged: (Int) -> Unit) {
             println("Error getting unread messages: ${exception.message}")
         }
 }
+fun getUnmarkedClasses(userId: String, onClassesCountChanged: (Int) -> Unit) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Obtenha as mensagens não lidas para o usuário conectado
+    firestore.collection("aulas")
+        .whereEqualTo("aluno", userId)
+        .whereEqualTo("presencaConfirmada", false)
+        .get()
+        .addOnSuccessListener { documents ->
+            // Contabiliza as mensagens não lidas
+            val unreadCount = documents.size()
+            onClassesCountChanged(unreadCount)
+        }
+        .addOnFailureListener { exception ->
+            // Handle failure
+            println("Error getting unrmarked classes: ${exception.message}")
+        }
+}
 @Composable
 fun BottomNavBar(navController: NavController, userId: String) {
     var unreadMessagesCount by remember { mutableStateOf(0)}
+    var unmarkedClass by remember { mutableStateOf(0)}
     val context = LocalContext.current
     // Chama a função para buscar mensagens não lidas sempre que o userId mudar
     LaunchedEffect(userId) {
@@ -43,6 +63,13 @@ fun BottomNavBar(navController: NavController, userId: String) {
             if (unreadMessagesCount > 0) {
                 // Dispara a notificação se houver novas mensagens não lidas
                 sendNewMessageNotification(context)
+            }
+        }
+        getUnmarkedClasses(userId) { count ->
+            unmarkedClass = count
+            if (unmarkedClass > 0) {
+                // Dispara a notificação se houver novas aulas com presença nao marcada
+                sendUnmarkedClassNotification(context)
             }
         }
     }
@@ -59,6 +86,11 @@ fun BottomNavBar(navController: NavController, userId: String) {
                     modifier = Modifier.size(50.dp), // Tamanho do ícone ajustado
                     tint = Color.Unspecified // Desativa a tintagem para preservar a cor original da imagem
                 )
+                if (unmarkedClass > 0) {
+                    Badge {
+                        Text(text = unmarkedClass.toString())
+                    }
+                }
             },
             selected = false, // Atualize a lógica para seleção dinâmica
             onClick = { navController.navigate("agenda") },

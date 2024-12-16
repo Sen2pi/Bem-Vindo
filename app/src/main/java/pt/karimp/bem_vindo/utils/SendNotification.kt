@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.*
 import pt.karimp.bem_vindo.R
+import pt.karimp.bem_vindo.ui.theme.getUnmarkedClasses
 import pt.karimp.bem_vindo.ui.theme.getUnreadMessages
 
 fun sendNewMessageNotification(context: Context) {
@@ -35,6 +36,30 @@ fun sendNewMessageNotification(context: Context) {
     // Enviar a notificação
     notificationManager.notify(0, notification)
 }
+fun sendUnmarkedClassNotification(context: Context) {
+    val channelId = "unmarked_class_channel"
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    // Criação do canal de notificação (necessário no Android 8+)
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            channelId,
+            "Unmarked Class",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    // Criação da notificação
+    val notification: Notification = NotificationCompat.Builder(context, channelId)
+        .setContentTitle("Aula com presença por marcar")
+        .setContentText("Você tem uma aula por marcar presença")
+        .setSmallIcon(R.mipmap.ic_notification) // Defina o ícone apropriado
+        .build()
+
+    // Enviar a notificação
+    notificationManager.notify(0, notification)
+}
 
 @Composable
 fun MessageNotification(userId: String) {
@@ -45,6 +70,19 @@ fun MessageNotification(userId: String) {
         getUnreadMessages(userId) { count ->
             if (count > 0) {
                 sendNewMessageNotification(context)
+            }
+        }
+    }
+}
+@Composable
+fun ClassNotification(userId: String) {
+    val context = LocalContext.current
+
+    LaunchedEffect(userId) {
+        // Ao encontrar uma nova mensagem não lida, envie uma notificação
+        getUnmarkedClasses(userId) { count ->
+            if (count > 0) {
+                sendUnmarkedClassNotification(context)
             }
         }
     }
