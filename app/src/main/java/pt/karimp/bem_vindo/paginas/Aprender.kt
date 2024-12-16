@@ -1,12 +1,20 @@
 package pt.karimp.bem_vindo.paginas
 
 // Compose Foundation
+import android.content.Context
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.*
-
+import android.media.MediaPlayer
+import androidx.compose.runtime.remember
 // Compose Material3
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
@@ -17,6 +25,7 @@ import androidx.compose.runtime.*
 // Compose UI
 import androidx.compose.ui.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -176,10 +185,17 @@ fun Aprender(navController: NavController) {
                 .padding(5.dp),
             contentAlignment = Alignment.Center
         ) {
+            Image(
+                painter = painterResource(id = R.mipmap.ic_caravela),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
             when {
                 loading -> CircularProgressIndicator()
                 error != null -> Text(error ?: "Erro desconhecido", color = Color.Red)
-                niveis.isNotEmpty() -> NivelList(navController, niveis, userData)
+                niveis.isNotEmpty() -> NivelList(navController, niveis, userData, translations)
                 else -> Text("Nenhum nível encontrado.", color = Color.Gray)
             }
         }
@@ -187,9 +203,9 @@ fun Aprender(navController: NavController) {
 }
 
 @Composable
-fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?) {
-    val gridColumns = 4 // Número de colunas na grid
-    val cellSize = 85.dp // Tamanho de cada botão
+fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?, translations: Map<String, String>) {
+    val gridColumns = 3 // Número de colunas na grid
+    val cellSize = 125.dp // Tamanho de cada botão
     val spacing = 20.dp // Espaçamento entre os itens
     val db = FirebaseFirestore.getInstance()
 
@@ -214,7 +230,6 @@ fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF005B7F), shape = MaterialTheme.shapes.medium)
             .padding(16.dp),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -235,10 +250,10 @@ fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?
                     val endY = (nextRow * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
 
                     drawLine(
-                        color = Color(0xFFA1B8CC),
+                        color = Color(0xFF005B7F),
                         start = androidx.compose.ui.geometry.Offset(startX, startY),
                         end = androidx.compose.ui.geometry.Offset(endX, endY),
-                        strokeWidth = 15f
+                        strokeWidth = 30f
                     )
                 }
             }
@@ -253,7 +268,7 @@ fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?
             items(niveis) { nivel ->
                 val completado = (userData?.aprender ?: 0) >= nivel.nivel
                 val nivelDocId = nivelDocs[nivel.nivel] // Obtenha o ID do documento carregado
-                NivelItem(nivel, completado, userData) {
+                NivelItem(nivel, completado, userData, translations ) {
                     if (nivelDocId != null) {
                         navController.navigate("nivel/$nivelDocId")
                     }
@@ -265,7 +280,14 @@ fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?
 
 
 @Composable
-fun NivelItem(nivel: Nivel, completado: Boolean, userData: User?, onClick: () -> Unit) {
+fun NivelItem(
+    nivel: Nivel,
+    completado: Boolean,
+    userData: User?,
+    translations: Map<String, String>,
+    context: Context = LocalContext.current,
+    onClick: () -> Unit
+) {
     val desbloqueado = (userData?.aprender ?: 0) + 1 >= nivel.nivel
     val corBotao = when {
         completado -> Color(0xFF4CAF50) // Verde se completado
@@ -273,22 +295,66 @@ fun NivelItem(nivel: Nivel, completado: Boolean, userData: User?, onClick: () ->
         else -> Color(0xFFB0BEC5) // Cinza se bloqueado
     }
 
-    Box() {
+    // Controle da animação tipo radar
+    val infiniteTransition = rememberInfiniteTransition()
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+    val offsetX by infiniteTransition.animateFloat(
+        initialValue = -10f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing), // Duração de 2 segundos
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(contentAlignment = Alignment.Center) {
+        // Radar animation only when unlocked and not completed
+        if (desbloqueado && !completado) {
+            Canvas(
+                modifier = Modifier
+                    .size(150.dp)
+            ) {
+                drawCircle(
+                    color = Color(0xFFE9BD0D),
+                    radius = size.minDimension / 2 * scale,
+                    alpha = alpha
+                )
+            }
+        }
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Button(
-                onClick = { if (desbloqueado) onClick() },
+                onClick = { if (desbloqueado) {
+                    onClick();
+                    playStopSound(R.raw.button_pressed, context );
+                } },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = corBotao,
                     disabledContainerColor = corBotao
                 ),
-                modifier = Modifier.size(70.dp),
                 enabled = desbloqueado // Botão desativado se bloqueado
             ) {
                 Icon(
                     painter = painterResource(id = R.mipmap.ic_nata),
-                    contentDescription = "Nível ${nivel.nivel}",
+                    contentDescription = "${translations["nivel"]} ${nivel.nivel}",
                     tint = Color.Unspecified,
+                    modifier = Modifier.size(100.dp)
                 )
             }
             Spacer(modifier = Modifier.height(2.dp))
@@ -296,22 +362,28 @@ fun NivelItem(nivel: Nivel, completado: Boolean, userData: User?, onClick: () ->
                 text = "Nível ${nivel.nivel}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (desbloqueado) Color(0xFFA1B8CC) else Color.Gray
+                color = if (desbloqueado) Color(0xFF005B7F) else Color.Gray,
             )
         }
         // Ícone do jogador apenas se desbloqueado (amarelo)
         if (desbloqueado && !completado) {
             Icon(
-                painter = painterResource(id = R.mipmap.ic_player), // Ícone do jogador
+                painter = painterResource(id = R.mipmap.ic_player), // Ícone do jogador (caravela)
                 contentDescription = "Jogador",
                 modifier = Modifier
-                    .size(50.dp)
-                    .align(Alignment.CenterEnd),
+                    .size(100.dp)
+                    .align(Alignment.CenterEnd)
+                    .offset(x = offsetX.dp), // Animação horizontal
                 tint = Color.Unspecified // Mesmo tom de amarelo
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
-
     }
+}
+
+fun playStopSound(resourceId: Int, context: Context) {
+    val mediaPlayer = MediaPlayer.create(context, resourceId)
+    mediaPlayer.start()
+    mediaPlayer.setOnCompletionListener { it.release() }
 }
 

@@ -173,7 +173,7 @@ fun PaginaDeLogin(navController: NavController) {
                     text = "${translations["login_button"]}",
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 19.sp
+                    fontSize = 16.sp
                 )
             }
 
@@ -196,7 +196,7 @@ fun PaginaDeLogin(navController: NavController) {
                         text = "${translations["register_button"]}",
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 16.sp
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
@@ -216,7 +216,7 @@ fun PaginaDeLogin(navController: NavController) {
                         text = "${translations["password_recovery_button"]}",
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 19.sp,
+                        fontSize = 16.sp,
                     )
                 }
             }

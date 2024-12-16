@@ -45,7 +45,13 @@ fun getTranslations(language: String): Map<String, String> {
             "register_button" to "Registrar-se",
             "password" to "Palavra-passe",
             "password_mail" to "Email enviado com sucesso!",
-            "jogo_complete" to "Complete a frase: "
+            "jogo_complete" to "Complete a frase: ",
+            "nivel_completed" to "Você concluiu o nível. Deseja voltar para os níveis?",
+            "parabens" to "Parabéns!!!",
+            "ir_niveis" to "Ir para Níveis",
+            "nivel" to "Nível",
+            "reset_response_button" to "Repor Resposta"
+
         )
         "fr" -> mapOf(
             "progress_title" to "Mon Progrès",
@@ -89,8 +95,12 @@ fun getTranslations(language: String): Map<String, String> {
             "register_button" to "S'inscrire",
             "password" to "Mot de passe",
             "password_mail" to "Email envoyé avec succès!",
-            "jogo_complete" to "Completer la phrase: "
-
+            "jogo_complete" to "Completer la phrase: ",
+            "nivel_completed" to "Vous avez terminé le niveau. Voulez-vous revenir aux niveaux ?",
+            "parabens" to "Félicitations !!!",
+            "ir_niveis" to "Aller aux niveaux",
+            "nivel" to "Niveau",
+            "reset_response_button" to "Réinitialiser la réponse"
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -134,7 +144,12 @@ fun getTranslations(language: String): Map<String, String> {
             "register_button" to "Register",
             "password" to "Password",
             "password_mail" to "Password sent successfully!",
-            "jogo_complete" to "Complete the phrase: "
+            "jogo_complete" to "Complete the phrase: ",
+            "nivel_completed" to "You have completed the level. Do you want to go back to levels?",
+            "parabens" to "Congratulations!!!",
+            "ir_niveis" to "Go to Levels",
+            "nivel" to "Level",
+            "reset_response_button" to "Reset Response"
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -178,7 +193,12 @@ fun getTranslations(language: String): Map<String, String> {
             "register_button" to "Registrarse",
             "password" to "Contraseña",
             "password_mail" to "Correo electrónico enviado con éxito!",
-            "jogo_complete" to "Completa la frase: "
+            "jogo_complete" to "Completa la frase: ",
+            "nivel_completed" to "Has completado el nivel. ¿Quieres volver a los niveles?",
+            "parabens" to "Felicitaciones!!!",
+            "ir_niveis" to "Ir para Níveis",
+            "nivel" to "Nivel",
+            "reset_response_button" to "Reiniciar la Respuesta"
         )
         else -> emptyMap()
     }
