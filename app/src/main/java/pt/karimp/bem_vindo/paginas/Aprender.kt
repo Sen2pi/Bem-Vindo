@@ -189,7 +189,7 @@ fun Aprender(navController: NavController) {
 @Composable
 fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?) {
     val gridColumns = 4 // Número de colunas na grid
-    val cellSize = 90.dp // Tamanho de cada botão
+    val cellSize = 85.dp // Tamanho de cada botão
     val spacing = 20.dp // Espaçamento entre os itens
     val db = FirebaseFirestore.getInstance()
 
