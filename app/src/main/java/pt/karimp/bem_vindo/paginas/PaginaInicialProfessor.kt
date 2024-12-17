@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,11 +26,14 @@ import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.ProfessorNavbar
+import pt.karimp.bem_vindo.ui.theme.getUnreadMessages
+import pt.karimp.bem_vindo.utils.sendNewMessageNotification
 
 @Composable
 fun PaginaInicialProfessor(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     var selectedLanguage by remember { mutableStateOf("fr") }
+    val context = LocalContext.current
     val translations = getTranslations(selectedLanguage)
     var userData by remember { mutableStateOf<User?>(null) }
     var currentUserDocumentId by remember { mutableStateOf("") }
@@ -40,6 +42,25 @@ fun PaginaInicialProfessor(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     var alunos by remember { mutableStateOf(listOf<User>()) }
 
+    fun getUnreadProfessorMessages(userId: String, alunoId:String, onMessagesCountChanged: (Int) -> Unit) {
+        val firestore = FirebaseFirestore.getInstance()
+
+        // Obtenha as mensagens não lidas para o usuário conectado
+        firestore.collection("messages")
+            .whereEqualTo("toUserId", userId)
+            .whereEqualTo("fromUserId",alunoId)
+            .whereEqualTo("read", false)
+            .get()
+            .addOnSuccessListener { documents ->
+                // Contabiliza as mensagens não lidas
+                val unreadCount = documents.size()
+                onMessagesCountChanged(unreadCount)
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                println("Error getting unread messages: ${exception.message}")
+            }
+    }
     LaunchedEffect(Unit) {
         try {
             val userDocSnapshot =
@@ -128,10 +149,11 @@ fun PaginaInicialProfessor(navController: NavController) {
                     .padding(16.dp)
             ) {
                 items(alunos) { aluno ->
-                    var alunoDocumentId = ""
+                    var unreadMessagesCount by remember { mutableStateOf(0)}
+                    var alunoDocId by remember { mutableStateOf("") }
                     db.collection("users").whereEqualTo("email", aluno.email).get().addOnSuccessListener { querySnapshot ->
                         if (!querySnapshot.isEmpty) {
-                            alunoDocumentId =  querySnapshot.documents.first().id
+                            alunoDocId = querySnapshot.documents.first().id
                         }
                     }
                     Row(
@@ -182,15 +204,33 @@ fun PaginaInicialProfessor(navController: NavController) {
                                 aluno.lingua
                             )
                             Row {
+                                getUnreadProfessorMessages(currentUserDocumentId, alunoDocId) { count ->
+                                    unreadMessagesCount = count
+                                    if (unreadMessagesCount > 0) {
+                                        // Dispara a notificação se houver novas mensagens não lidas
+                                        sendNewMessageNotification(context)
+                                    }
+                                }
                                 IconButton(onClick = {
-                                    navController.navigate("chatProfessor/${alunoDocumentId}")
-
+                                    navController.navigate("chatProfessor/${alunoDocId}")
                                 }) {
-                                    Icon(
-                                        painter = painterResource(id = R.mipmap.chat_for),
-                                        contentDescription = "Selecionar Aluno",
-                                        tint = Color.Unspecified,
-                                    )
+                                    Box {
+                                        Icon(
+                                            painter = painterResource(id = R.mipmap.chat_for),
+                                            contentDescription = "Selecionar Aluno",
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                        if (unreadMessagesCount > 0) {
+                                            Badge(
+                                                modifier = Modifier
+                                                    .align(Alignment.TopStart)
+                                                    .padding(start = 4.dp, top = 4.dp)
+                                            ) {
+                                                Text(text = unreadMessagesCount.toString())
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

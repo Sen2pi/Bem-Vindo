@@ -16,5 +16,6 @@ data class User(
     val preferenciaHorario: String = "",
     val Pontuacao: Int = 0,
     val aprender: Int = 0,
-    val lingua: String = ""
-)
+    val lingua: String = "",
+
+    )

@@ -13,7 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import pt.karimp.bem_vindo.utils.sendNewMessageNotification
 import pt.karimp.bem_vindo.utils.sendUnmarkedClassNotification
+import pt.karimp.bem_vindo.utils.sendmarkedClassNotification
 
+fun getmarkedProfessorClasses(userId: String, onClassesCountChanged: (Int) -> Unit) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Obtenha as mensagens não lidas para o usuário conectado
+    firestore.collection("aulas")
+        .whereEqualTo("professor", userId)
+        .whereEqualTo("presencaConfirmada", true)
+        .get()
+        .addOnSuccessListener { documents ->
+            // Contabiliza as mensagens não lidas
+            val unreadCount = documents.size()
+            onClassesCountChanged(unreadCount)
+        }
+        .addOnFailureListener { exception ->
+            // Handle failure
+            println("Error getting unrmarked classes: ${exception.message}")
+        }
+}
 
 @Composable
 fun ProfessorNavbar(navController: NavController, userId: String) {
@@ -22,18 +41,11 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
     val context = LocalContext.current
     // Chama a função para buscar mensagens não lidas sempre que o userId mudar
     LaunchedEffect(userId) {
-        getUnreadMessages(userId) { count ->
-            unreadMessagesCount = count
-            if (unreadMessagesCount > 0) {
-                // Dispara a notificação se houver novas mensagens não lidas
-                sendNewMessageNotification(context)
-            }
-        }
-        getUnmarkedClasses(userId) { count ->
+        getmarkedProfessorClasses(userId) { count ->
             unmarkedClass = count
             if (unmarkedClass > 0) {
                 // Dispara a notificação se houver novas aulas com presença nao marcada
-                sendUnmarkedClassNotification(context)
+                sendmarkedClassNotification(context)
             }
         }
     }
@@ -66,7 +78,6 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                 unselectedTextColor = Color.LightGray
             )
         )
-
         // Notifications
         NavigationBarItem(
             icon = {
@@ -87,7 +98,6 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                 unselectedTextColor = Color.LightGray
             )
         )
-
         // Custom Home Button
         NavigationBarItem(
             icon = {
@@ -125,30 +135,5 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                 unselectedTextColor = Color.LightGray
             )
         )
-
-        /*NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.mipmap.chat_for),
-                    contentDescription = "Chat",
-                    modifier = Modifier.size(50.dp),
-                    tint = Color.Unspecified
-                )
-                if (unreadMessagesCount > 0) {
-                    Badge {
-                        Text(text = unreadMessagesCount.toString())
-                    }
-                }
-            },
-            selected = false,
-            onClick = { navController.navigate("chatProfessor") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                selectedTextColor = Color.White,
-                indicatorColor = Color(0xFF006377),
-                unselectedIconColor = Color.LightGray,
-                unselectedTextColor = Color.LightGray
-            )
-        )*/
     }
 }

@@ -24,11 +24,11 @@ fun Navegacao() {
         composable("semprof") { SemProf(navController) }
         composable("nivel/{nivel}") { backStackEntry ->
             val nivel = backStackEntry.arguments?.getString("nivel")
-            Jogo(nivel = nivel.toString(), navController = navController)
+            Jogo(nivel.toString(), navController)
         }
-        composable("chatProfessor/{aluno}") { backStackEntry ->
-            val aluno = backStackEntry.arguments?.getString("aluno")
-            ChatProfessor( navController = navController, alunoDocumentId = aluno.toString())
+        composable("chatProfessor/{alunoDocumentId}") { backStackEntry ->
+            val aluno = backStackEntry.arguments?.getString("alunoDocumentId")
+            ChatProfessor(navController, aluno.toString())
         }
         composable("escolhaAlunos") { EscolhaAlunos(navController) }
         composable("darNotas") { DarNotas(navController) }

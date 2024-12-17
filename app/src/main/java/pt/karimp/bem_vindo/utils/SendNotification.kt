@@ -36,6 +36,29 @@ fun sendNewMessageNotification(context: Context) {
     // Enviar a notificação
     notificationManager.notify(0, notification)
 }
+fun sendmarkedClassNotification(context: Context) {
+    val channelId = "marked_class_channel"
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    // Criação do canal de notificação (necessário no Android 8+)
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            channelId,
+            "Marked Class",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    // Criação da notificação
+    val notification: Notification = NotificationCompat.Builder(context, channelId)
+        .setContentTitle("Aluno Presente")
+        .setContentText("Um Aluno marcou presença na sua aula")
+        .setSmallIcon(R.mipmap.ic_notification) // Defina o ícone apropriado
+        .build()
+    // Enviar a notificação
+    notificationManager.notify(0, notification)
+}
 fun sendUnmarkedClassNotification(context: Context) {
     val channelId = "unmarked_class_channel"
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
