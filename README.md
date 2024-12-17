@@ -17,9 +17,9 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
   - ✅ Confirmar a presença.
   - ✅ integração de criação de sala de VideoChamada Jitsi
   - ✅ Possibilidade de adicionar ao calendário google
-- 🔲 Suporte a notificações push para lembrar os usuários sobre aulas e mensagens.
+- ✅ Suporte a notificações push para lembrar os usuários sobre aulas e mensagens.
 - ✅ Feedback e avaliação em tempo real durante interações com tutores.
-- 🔲 Jogos de Aprendizagem interativos.
+- ✅Jogos de Aprendizagem interativos.
 - 🔲 Sistemas de notas, progresso e níveis.
 
 ### Funcionalidades do MVP
@@ -67,6 +67,11 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
   - ✅ Preferencia de horario
   - ✅ Criação da sala de videoconferencia
   - ✅ Criação da integração com calendario
+- Aprender:
+  - ✅ Sistema de Niveis
+  - ✅ Jogo de Palavras
+  - ✅ Varias dificuldades
+  - ✅ Progresso atualizado com pontuação
 
 
 ## Tecnologias Utilizadas
