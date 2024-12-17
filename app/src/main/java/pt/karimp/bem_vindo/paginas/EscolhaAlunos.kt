@@ -140,11 +140,21 @@ fun EscolhaAlunos(navController: NavController) {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "Escolha de Alunos",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = Color(0xFF005B7F)
+                )
                 Icon(
                     painter = painterResource(id = R.mipmap.ic_checkbox),
                     contentDescription = "Aluno",
                     tint = Color.Unspecified,
                     modifier = Modifier.padding(8.dp)
+                )
+                Divider(
+                    color = Color(0xFF005B7F), // Color of the line
+                    thickness = 2.dp,    // Thickness of the line
                 )
                 if (alunosSemProfessor.isEmpty()) {
                     Text(

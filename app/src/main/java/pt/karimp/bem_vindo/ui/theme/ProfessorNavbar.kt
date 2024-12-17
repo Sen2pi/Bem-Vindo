@@ -89,9 +89,9 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                     modifier = Modifier.size(50.dp), // Tamanho do ícone ajustado
                     tint = Color.Unspecified // Desativa a tintagem para preservar a cor original da imagem
                 )
-                if (unmarkedClass > 0) {
+                if (alunosCount > 0) {
                     Badge {
-                        Text(text = unmarkedClass.toString())
+                        Text(text = alunosCount.toString())
                     }
                 }
             },
