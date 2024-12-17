@@ -52,7 +52,8 @@ fun getTranslations(language: String): Map<String, String> {
             "nivel" to "Nível",
             "reset_response_button" to "Repor Resposta",
             "regras" to "Regras",
-            "regulamento_registro" to "NSS : tem de ter exatamente 11 digitos, NIF: tem de ter exatamente 9 digitos, Telefone tem de ter exatamente 9 digitos, O codigo Postal tem de começar por 4 digitos e ter um - mais 3 digitos, O email deve ser um email válido"
+            "regulamento_registro" to "NSS : tem de ter exatamente 11 digitos, NIF: tem de ter exatamente 9 digitos, Telefone tem de ter exatamente 9 digitos, O codigo Postal tem de começar por 4 digitos e ter um - mais 3 digitos, O email deve ser um email válido",
+            "professor_label" to "É Professor?"
 
         )
         "fr" -> mapOf(
@@ -108,7 +109,8 @@ fun getTranslations(language: String): Map<String, String> {
                     "NIF : doit contenir exactement 9 chiffres\n" +
                     "Téléphone : doit contenir exactement 9 chiffres\n" +
                     "Code Postal : doit commencer par 4 chiffres et contenir un \"-\" suivi de 3 chiffres\n" +
-                    "Email : doit être une adresse email valide"
+                    "Email : doit être une adresse email valide",
+            "professor_label" to "Professeur?"
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -163,7 +165,8 @@ fun getTranslations(language: String): Map<String, String> {
                     "NIF: must have exactly 9 digits\n" +
                     "Phone: must have exactly 9 digits\n" +
                     "Postal Code: must start with 4 digits and contain a \"-\" followed by 3 digits\n" +
-                    "Email: must be a valid email address"
+                    "Email: must be a valid email address",
+            "professor_label" to "Are you a Teacher?"
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -218,7 +221,8 @@ fun getTranslations(language: String): Map<String, String> {
                     "NIF: debe tener exactamente 9 dígitos\n" +
                     "Teléfono: debe tener exactamente 9 dígitos\n" +
                     "Código Postal: debe comenzar con 4 dígitos y contener un \"-\" seguido de 3 dígitos\n" +
-                    "Correo Electrónico: debe ser una dirección de correo electrónico válida"
+                    "Correo Electrónico: debe ser una dirección de correo electrónico válida",
+            "professor_label" to "Eres un Professor?"
         )
         else -> emptyMap()
     }

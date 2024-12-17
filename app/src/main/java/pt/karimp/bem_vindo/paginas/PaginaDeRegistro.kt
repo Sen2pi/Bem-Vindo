@@ -40,6 +40,7 @@ fun PaginaDeRegistro(navController: NavController) {
     val translations =
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
     val firestore = FirebaseFirestore.getInstance() // Inicializa o Firestore
+    var isProfessor by remember { mutableStateOf(false) }
     val campos = listOf(
         "${translations["full_name_label"]}",
         "${translations["nss_label"]}",
@@ -199,8 +200,15 @@ fun PaginaDeRegistro(navController: NavController) {
                         )
                     )
                 }
-            }
 
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = isProfessor,
+                    onCheckedChange = { isProfessor = it }
+                )
+                Text("${translations["professor_label"]}", color = Color(0xFF00405A))
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
@@ -223,6 +231,7 @@ fun PaginaDeRegistro(navController: NavController) {
                                     progresso = 0,
                                 ).onEach { response ->
                                     if (response is AuthResponse.Success) {
+                                        val tipoUsuario = if (isProfessor) "Professor" else "Aluno"
                                         firestore.collection("users")
                                             .add(
                                                 hashMapOf(
@@ -234,7 +243,7 @@ fun PaginaDeRegistro(navController: NavController) {
                                                     "codigoPostal" to valores[5],
                                                     "telefone" to valores[6],
                                                     "email" to valores[7],
-                                                    "tipo" to "Aluno", // Sempre "Aluno"
+                                                    "tipo" to tipoUsuario, // Sempre "Aluno"
                                                     "progresso" to 0,
                                                     "nivel" to "1",
                                                     "professor" to "aSyWDvIyEM8zUlUWaXAF",
