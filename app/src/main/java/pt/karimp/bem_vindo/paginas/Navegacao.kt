@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 fun Navegacao() {
     val navController: NavHostController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "homeProfessor") {
         composable("login") { PaginaDeLogin(navController) }
         composable("register") { PaginaDeRegistro(navController) }
         composable("homeProfessor") { PaginaInicialProfessor(navController) }
@@ -26,6 +26,13 @@ fun Navegacao() {
             val nivel = backStackEntry.arguments?.getString("nivel")
             Jogo(nivel = nivel.toString(), navController = navController)
         }
+        composable("chatProfessor/{aluno}") { backStackEntry ->
+            val aluno = backStackEntry.arguments?.getString("aluno")
+            ChatProfessor( navController = navController, alunoDocumentId = aluno.toString())
+        }
+        composable("escolhaAlunos") { EscolhaAlunos(navController) }
+        composable("darNotas") { DarNotas(navController) }
+        composable("agendaProfessor") { AgendaProfessor(navController) }
 
     }
 }
