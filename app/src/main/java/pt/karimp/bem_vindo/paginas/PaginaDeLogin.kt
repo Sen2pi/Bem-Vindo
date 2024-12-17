@@ -50,10 +50,10 @@ fun PaginaDeLogin(navController: NavController) {
         Image(
             painter = painterResource(id = R.mipmap.ic_ajulejo3),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(0.80f)
+                .alpha(0.70f)
         )
         Image(
             painter = painterResource(id = R.mipmap.logo_final1),
