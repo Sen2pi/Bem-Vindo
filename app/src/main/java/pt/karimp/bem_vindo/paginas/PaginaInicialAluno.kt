@@ -4,16 +4,12 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -26,10 +22,8 @@ import kotlinx.coroutines.tasks.await
 import pt.karimp.bem_vindo.API.LanguageSelector
 import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
-
-import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import pt.karimp.bem_vindo.models.User
-import pt.karimp.bem_vindo.ui.theme.topNavBar
+import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 
 @Composable
 fun PaginaInicialAluno(navController: NavController) {
@@ -59,6 +53,7 @@ fun PaginaInicialAluno(navController: NavController) {
                 currentUserDocumentId = userDoc.id
                 professorDocumentId = userDoc.getString("professor") ?: ""
             }
+            updateUserLevelAndProgress(userData, db, currentUserDocumentId)
         } catch (e: Exception) {
             Log.e("FirestoreDebug", "Erro ao carregar usuário: ${e.message}")
         }
@@ -86,7 +81,7 @@ fun PaginaInicialAluno(navController: NavController) {
         topBar = {  // Icons in the top right corner
             Row (modifier = Modifier
                 .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
-            horizontalArrangement = Arrangement.Center){
+                horizontalArrangement = Arrangement.Center){
                 Image(
                     painter = painterResource(id = R.mipmap.logo_final1),
                     contentDescription = null,
@@ -102,7 +97,7 @@ fun PaginaInicialAluno(navController: NavController) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
 
-            ) {
+                ) {
                 // Language Selector
                 LanguageSelector(
                     selectedLanguage = selectedLanguage,
@@ -133,7 +128,7 @@ fun PaginaInicialAluno(navController: NavController) {
                     )
                 }
             } },
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        bottomBar = { BottomNavBar(navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Image(
@@ -148,14 +143,8 @@ fun PaginaInicialAluno(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentAlignment = Alignment.TopCenter
+            contentAlignment = Alignment.TopStart
         ) {
-            // Background Image
-
-
-
-
-            // Content Section
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -163,44 +152,100 @@ fun PaginaInicialAluno(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(25.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.size(50.dp))
-                // Progress Section
-                ProgressSection(progress = userData?.progresso ?: 0, title = translations["progress_title"]!!, nivel = userData?.nivel
-                    ?: "", selectedLanguage)
+                ProgressSection(
+                    progress = userData?.progresso ?: 0,
+                    title = translations["progress_title"]!!,
+                    nivel = userData?.nivel ?: "",
+                    selectedLanguage
+                )
 
                 if(professorData!=null){
-                // Tutor Section
-                TutorSection(
-                    title = translations["tutor_title"]!!,
-                    tutorName = "${professorData?.nome}",
-                    city = "${professorData?.cidade}",
-                    email = "${professorData?.email}"
-                )
+                    // Tutor Section
+                    TutorSection(
+                        title = translations["tutor_title"]!!,
+                        tutorName = "${professorData?.nome}",
+                        city = "${professorData?.cidade}",
+                        email = "${professorData?.email}"
+                    )
+                }
+                DailyPhrase(translations["daily_phrase_title"]!!, selectedLanguage, currentUserDocumentId)
+
+
             }
-                // Daily Phrase Section
-                DailyPhrase(
-                    title = translations["daily_phrase_title"]!!,
-                    chosenLanguage = selectedLanguage,
-                    userDocumentID = currentUserDocumentId
+        }
+    }
+}
+@Composable
+fun TutorSection(title: String, tutorName: String, city: String, email: String) {
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFA1B8CC)),
+
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color(0xFF005B7F)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.mipmap.ic_professor),
+                    contentDescription = "Tutor Image",
+                    modifier = Modifier.size(100.dp)
                 )
+                Column {
+                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
+                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
+                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
+                }
             }
+        }
+    }
+}
+suspend fun updateUserLevelAndProgress(userData: User?, db: FirebaseFirestore, documentId: String) {
+    val pontos = userData?.Pontuacao ?: 0
+    val nivel = (pontos / 100) + 1
+    val progresso = pontos % 100
+
+    if (userData != null) {
+        userData.nivel = nivel.toString()
+        userData.progresso = progresso
+
+        try {
+            db.collection("users").document(documentId).update(
+                "nivel", userData.nivel,
+                "progresso", userData.progresso
+            ).await()
+        } catch (e: Exception) {
+            Log.e("FirestoreDebug", "Erro ao atualizar nível e progresso: ${e.message}")
         }
     }
 }
 
 @Composable
 fun ProgressSection(progress: Int, title: String, nivel: String, selectedLanguage: String) {
-    val translations = getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
+    val translations = getTranslations(selectedLanguage)
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color(0xFFA1B8CC), shape = RoundedCornerShape(12.dp)) ,// Define o fundo com cantos arredondados
+            .background(color = Color(0xFFA1B8CC), shape = RoundedCornerShape(12.dp)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(top = 8.dp),
             color = Color(0xFF005B7F)
         )
         LinearProgressIndicator(
@@ -264,43 +309,3 @@ fun ProgressSection(progress: Int, title: String, nivel: String, selectedLanguag
         }
     }
 }
-
-@Composable
-fun TutorSection(title: String, tutorName: String, city: String, email: String) {
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFA1B8CC))
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = Color(0xFF005B7F)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_professor),
-                    contentDescription = "Tutor Image",
-                    modifier = Modifier.size(100.dp)
-                )
-                Column {
-                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
-                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
-                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
-                }
-            }
-        }
-    }
-}
-
-
-
-

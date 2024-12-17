@@ -173,7 +173,7 @@ fun Jogo(nivel: String, navController: NavController) {
                         val currentAprender = it.getLong("aprender")?.toInt() ?: 0
                         val newAprender = currentAprender + 1
                         db.collection("users").document(it.id)
-                            .update("aprender", newAprender, "pontuacao", userData?.Pontuacao?.plus(10))
+                            .update("aprender", newAprender, "Pontuacao", userData?.Pontuacao?.plus(10))
                             .addOnFailureListener { e ->
                                 Toast.makeText(
                                     context,

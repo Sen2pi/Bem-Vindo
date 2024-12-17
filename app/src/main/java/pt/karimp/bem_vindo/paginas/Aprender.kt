@@ -203,9 +203,14 @@ fun Aprender(navController: NavController) {
 }
 
 @Composable
-fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?, translations: Map<String, String>) {
+fun NivelList(
+    navController: NavController,
+    niveis: List<Nivel>,
+    userData: User?,
+    translations: Map<String, String>
+) {
     val gridColumns = 3 // Número de colunas na grid
-    val cellSize = 125.dp // Tamanho de cada botão
+    val cellSize = 133.dp // Tamanho de cada botão
     val spacing = 20.dp // Espaçamento entre os itens
     val db = FirebaseFirestore.getInstance()
 
@@ -233,42 +238,19 @@ fun NivelList(navController: NavController, niveis: List<Nivel>, userData: User?
             .padding(16.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            niveis.forEachIndexed { index, _ ->
-                if (index + 1 < niveis.size) {
-                    val currentRow = index / gridColumns
-                    val currentColumn = index % gridColumns
-                    val nextRow = (index + 1) / gridColumns
-                    val nextColumn = (index + 1) % gridColumns
-
-                    val startX =
-                        (currentColumn * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
-                    val startY = (currentRow * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
-
-                    val endX = (nextColumn * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
-                    val endY = (nextRow * (cellSize + spacing)).toPx() + (cellSize.toPx() / 2)
-
-                    drawLine(
-                        color = Color(0xFF005B7F),
-                        start = androidx.compose.ui.geometry.Offset(startX, startY),
-                        end = androidx.compose.ui.geometry.Offset(endX, endY),
-                        strokeWidth = 30f
-                    )
-                }
-            }
-        }
+        val listState = rememberLazyGridState()
 
         LazyVerticalGrid(
+            state = listState,
             columns = GridCells.Fixed(gridColumns),
             verticalArrangement = Arrangement.spacedBy(spacing),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(niveis) { nivel ->
+            items(niveis, key = { it.nivel }) { nivel ->
                 val completado = (userData?.aprender ?: 0) >= nivel.nivel
-                val nivelDocId = nivelDocs[nivel.nivel] // Obtenha o ID do documento carregado
-                NivelItem(nivel, completado, userData, translations ) {
+                val nivelDocId = nivelDocs[nivel.nivel]
+                NivelItem(nivel, completado, userData, translations) {
                     if (nivelDocId != null) {
                         navController.navigate("nivel/$nivelDocId")
                     }
@@ -339,10 +321,12 @@ fun NivelItem(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Button(
-                onClick = { if (desbloqueado) {
-                    onClick();
-                    playStopSound(R.raw.button_pressed, context );
-                } },
+                onClick = {
+                    if (desbloqueado) {
+                        onClick();
+                        playStopSound(R.raw.button_pressed, context);
+                    }
+                },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = corBotao,
@@ -350,12 +334,52 @@ fun NivelItem(
                 ),
                 enabled = desbloqueado // Botão desativado se bloqueado
             ) {
-                Icon(
-                    painter = painterResource(id = R.mipmap.ic_nata),
-                    contentDescription = "${translations["nivel"]} ${nivel.nivel}",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(100.dp)
-                )
+                if (nivel.final) {
+                    Icon(
+                        painter = painterResource(id = R.mipmap.ic_level),
+                        contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(100.dp)
+                    )
+                } else {
+                    if (nivel.dificuldade == 1) {
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_nata),
+                            contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(100.dp)
+                        )
+                    } else if(nivel.dificuldade == 2){
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_nivel1),
+                            contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(100.dp)
+                        )
+                    }else if(nivel.dificuldade == 3){
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_nivel2),
+                            contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(100.dp)
+                        )
+                    }else if(nivel.dificuldade == 4){
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_nivel3),
+                            contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(100.dp)
+                        )
+                    }else if(nivel.dificuldade == 5){
+                        Icon(
+                            painter = painterResource(id = R.mipmap.ic_nivel4),
+                            contentDescription = "${translations["nivel"]} ${nivel.nivel}",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(100.dp)
+                        )
+                    }
+
+                }
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
