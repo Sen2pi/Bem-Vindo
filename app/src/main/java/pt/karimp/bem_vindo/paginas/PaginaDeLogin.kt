@@ -48,12 +48,12 @@ fun PaginaDeLogin(navController: NavController) {
     ) {
         // Imagem de background
         Image(
-            painter = painterResource(id = R.mipmap.azulejo1),
+            painter = painterResource(id = R.mipmap.ic_ajulejo3),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(0.60f)
+                .alpha(0.80f)
         )
         Image(
             painter = painterResource(id = R.mipmap.logo_final1),

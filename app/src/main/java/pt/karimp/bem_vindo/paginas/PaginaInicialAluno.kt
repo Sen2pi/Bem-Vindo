@@ -280,7 +280,7 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
+                color = Color(0xFF005B7F)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -292,9 +292,9 @@ fun TutorSection(title: String, tutorName: String, city: String, email: String) 
                     modifier = Modifier.size(100.dp)
                 )
                 Column {
-                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyLarge, color = Color.White)
-                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyLarge, color = Color.White)
-                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+                    Text(text = "Nom: $tutorName", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
+                    Text(text = "Ville: $city", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
+                    Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge, color = Color(0xFF005B7F))
                 }
             }
         }

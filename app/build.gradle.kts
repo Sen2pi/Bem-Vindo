@@ -71,7 +71,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
-
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation("io.appwrite:sdk-for-android:6.0.0")
 
     implementation(libs.androidx.core.ktx)

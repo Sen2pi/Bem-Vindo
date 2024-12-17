@@ -133,12 +133,12 @@ fun DailyPhrase(title: String, chosenLanguage: String, userDocumentID: String) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.White
+                    color = Color(0xFF005B7F)
                 )
                 Text(
                     text = "${fraseDoDia?.frase}",
                     style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
-                    color = Color.White
+                    color = Color(0xFF005B7F)
                 )
                 Text(
                     text = when (chosenLanguage) {
@@ -148,7 +148,7 @@ fun DailyPhrase(title: String, chosenLanguage: String, userDocumentID: String) {
                         else -> fraseDoDia?.definicaoEs
                     } ?: "",
                     style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
-                    color = Color.White
+                    color = Color(0xFF005B7F)
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End

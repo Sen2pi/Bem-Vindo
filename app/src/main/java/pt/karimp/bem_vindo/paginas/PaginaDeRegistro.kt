@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.launchIn
@@ -27,12 +29,13 @@ import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.auth.AuthResponse
 import pt.karimp.bem_vindo.auth.AuthenticationManager
+import pt.karimp.bem_vindo.utils.ConfettiRain
 
 @Composable
 fun PaginaDeRegistro(navController: NavController) {
 
-
-
+    val context = LocalContext.current
+    var mostrarPopup by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
     val translations =
         getTranslations(selectedLanguage) // Obter traduções com base no idioma selecionado
@@ -129,7 +132,7 @@ fun PaginaDeRegistro(navController: NavController) {
         }
         Row(
             modifier = Modifier
-                .padding(top = 30.dp, end = 15.dp)
+                .padding(top = 50.dp, end = 15.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
@@ -146,11 +149,19 @@ fun PaginaDeRegistro(navController: NavController) {
                     tint = Color.Unspecified
                 )
             }
+            IconButton(onClick = { mostrarPopup = true }) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_faq),
+                    contentDescription = "Logoff",
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.Unspecified
+                )
+            }
         }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(top = 75.dp).padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -187,15 +198,6 @@ fun PaginaDeRegistro(navController: NavController) {
                             unfocusedLabelColor = Color.White,
                         )
                     )
-
-                    if (errorMessages[index].isNotEmpty()) {
-                        Text(
-                            text = errorMessages[index],
-                            color = Color.Red,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
                 }
             }
 
@@ -239,6 +241,7 @@ fun PaginaDeRegistro(navController: NavController) {
                                                     "preferenciaHorario" to "",
                                                     "pontuacao" to 0,
                                                     "aprender" to 0,
+                                                    "lingua" to selectedLanguage
                                                 )
                                             )
                                             .addOnSuccessListener {
@@ -267,11 +270,12 @@ fun PaginaDeRegistro(navController: NavController) {
                 enabled = validateForm(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00405A),
+                    disabledContainerColor = Color.Gray,
                     contentColor = Color.White
                 )
             ) {
                 Text(
-                    text = "S'enregistrer",
+                    text = "${translations["register_button"]}",
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -288,5 +292,51 @@ fun PaginaDeRegistro(navController: NavController) {
                 )
             }
         }
+    }
+    if (mostrarPopup) {
+        AlertDialog(
+            onDismissRequest = { mostrarPopup = false },
+            containerColor = Color(0xFFA1B8CC),
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.mipmap.ic_regras), // Substitua pelo ID real do recurso do ícone
+                        contentDescription = "Ícone de regras",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("${translations["regras"]}", color = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(id = R.mipmap.ic_regras), // Substitua pelo ID real do recurso do ícone
+                        contentDescription = "Ícone de regras",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+            },
+            text = {
+                Text(
+                    "${translations["regulamento_registro"]}",
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            },
+            confirmButton = {
+            },
+            dismissButton = {
+                Button(
+                    onClick = { mostrarPopup = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8E1213),
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("${translations["cancel_button"]}")
+                }
+            }
+        )
     }
 }

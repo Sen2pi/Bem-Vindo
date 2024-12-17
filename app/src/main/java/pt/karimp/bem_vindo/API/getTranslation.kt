@@ -50,7 +50,9 @@ fun getTranslations(language: String): Map<String, String> {
             "parabens" to "Parabéns!!!",
             "ir_niveis" to "Ir para Níveis",
             "nivel" to "Nível",
-            "reset_response_button" to "Repor Resposta"
+            "reset_response_button" to "Repor Resposta",
+            "regras" to "Regras",
+            "regulamento_registro" to "NSS : tem de ter exatamente 11 digitos, NIF: tem de ter exatamente 9 digitos, Telefone tem de ter exatamente 9 digitos, O codigo Postal tem de começar por 4 digitos e ter um - mais 3 digitos, O email deve ser um email válido"
 
         )
         "fr" -> mapOf(
@@ -100,7 +102,13 @@ fun getTranslations(language: String): Map<String, String> {
             "parabens" to "Félicitations !!!",
             "ir_niveis" to "Aller aux niveaux",
             "nivel" to "Niveau",
-            "reset_response_button" to "Réinitialiser la réponse"
+            "reset_response_button" to "Réinitialiser la réponse",
+            "regras" to "Regles",
+            "regulamento_registro" to "NSS : doit contenir exactement 11 chiffres\n" +
+                    "NIF : doit contenir exactement 9 chiffres\n" +
+                    "Téléphone : doit contenir exactement 9 chiffres\n" +
+                    "Code Postal : doit commencer par 4 chiffres et contenir un \"-\" suivi de 3 chiffres\n" +
+                    "Email : doit être une adresse email valide"
         )
         "en" -> mapOf(
             "progress_title" to "My Progress",
@@ -149,7 +157,13 @@ fun getTranslations(language: String): Map<String, String> {
             "parabens" to "Congratulations!!!",
             "ir_niveis" to "Go to Levels",
             "nivel" to "Level",
-            "reset_response_button" to "Reset Response"
+            "reset_response_button" to "Reset Response",
+            "regras" to "Rules",
+            "regulamento_registro" to "NSS: must have exactly 11 digits\n" +
+                    "NIF: must have exactly 9 digits\n" +
+                    "Phone: must have exactly 9 digits\n" +
+                    "Postal Code: must start with 4 digits and contain a \"-\" followed by 3 digits\n" +
+                    "Email: must be a valid email address"
         )
         "es" -> mapOf(
             "progress_title" to "Mi Progreso",
@@ -198,7 +212,13 @@ fun getTranslations(language: String): Map<String, String> {
             "parabens" to "Felicitaciones!!!",
             "ir_niveis" to "Ir para Níveis",
             "nivel" to "Nivel",
-            "reset_response_button" to "Reiniciar la Respuesta"
+            "reset_response_button" to "Reiniciar la Respuesta",
+            "regras" to "Regras",
+            "regulamento_registro" to "NSS: debe tener exactamente 11 dígitos\n" +
+                    "NIF: debe tener exactamente 9 dígitos\n" +
+                    "Teléfono: debe tener exactamente 9 dígitos\n" +
+                    "Código Postal: debe comenzar con 4 dígitos y contener un \"-\" seguido de 3 dígitos\n" +
+                    "Correo Electrónico: debe ser una dirección de correo electrónico válida"
         )
         else -> emptyMap()
     }

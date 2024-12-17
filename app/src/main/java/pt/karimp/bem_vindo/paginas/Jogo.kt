@@ -1,6 +1,15 @@
 package pt.karimp.bem_vindo.paginas
 // Compose Foundation
+import android.inputmethodservice.Keyboard
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 
 import androidx.compose.runtime.* // Para estados e composição reativa
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 
 // Compose UI
@@ -47,6 +57,7 @@ import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.models.Frase
 import pt.karimp.bem_vindo.models.Nivel
 import pt.karimp.bem_vindo.models.User
+import pt.karimp.bem_vindo.utils.ConfettiRain
 
 @Composable
 fun Jogo(nivel: String, navController: NavController) {
@@ -120,6 +131,29 @@ fun Jogo(nivel: String, navController: NavController) {
             frases = snapshot.documents.mapNotNull { it.toObject(Frase::class.java) }
             val documentSnapshot = db.collection("niveis").document(nivel).get().await()
             nivelData = documentSnapshot.toObject(Nivel::class.java)
+            // Referência ao Firestore
+
+
+         /*   val novaFrase = Frase(
+                frase = listOf("Eu", "Tu", "Ele/Ela", "Nós", "Vós", "Eles/Elas", "sois", "são","é","somos", "linda", "rebeldes", "inteligentes",
+                    "porreiras"),
+                frase1Fr = "Elles sont cool",
+                frase1 = "Eles/Elas são porreiras",
+                frase1En = "They are cool",
+                frase1Es = "Ellas son porradas",
+                final = false
+            )
+
+            db.collection("niveis")
+                .document(nivel)
+                .collection("frases")
+                .add(novaFrase)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("Firestore", "Frase adicionada com ID: ${documentReference.id}")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("Firestore", "Erro ao adicionar a frase", e)
+                }*/
         } catch (e: Exception) {
             error = "Erro ao carregar as frases: ${e.message}"
         } finally {
@@ -139,7 +173,7 @@ fun Jogo(nivel: String, navController: NavController) {
                         val currentAprender = it.getLong("aprender")?.toInt() ?: 0
                         val newAprender = currentAprender + 1
                         db.collection("users").document(it.id)
-                            .update("aprender", newAprender)
+                            .update("aprender", newAprender, "pontuacao", userData?.Pontuacao?.plus(10))
                             .addOnFailureListener { e ->
                                 Toast.makeText(
                                     context,
@@ -233,7 +267,11 @@ fun Jogo(nivel: String, navController: NavController) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxWidth().background(Color(0xFFA1B8CC), shape = RoundedCornerShape(16.dp)).padding(16.dp).alpha(0.60f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFA1B8CC), shape = RoundedCornerShape(16.dp))
+                            .padding(8.dp)
+                            .alpha(0.60f)
                     ) {
                         Icon(
                             painter = painterResource(id = R.mipmap.ic_abc), // Substitua pelo ID real do recurso do ícone
@@ -242,7 +280,7 @@ fun Jogo(nivel: String, navController: NavController) {
                             modifier = Modifier.size(100.dp)
                         )
                         Text(
-                            text = "Complete: ${if(selectedLanguage == "fr") fraseAtual.frase1Fr else if(selectedLanguage == "en") fraseAtual.frase1En else fraseAtual.frase1Es}",
+                            text = "Complete: ${if (selectedLanguage == "fr") fraseAtual.frase1Fr else if (selectedLanguage == "en") fraseAtual.frase1En else fraseAtual.frase1Es}",
                             style = MaterialTheme.typography.titleMedium,
                             color = Color(0xFF005B7F),
                             fontSize = 25.sp
@@ -251,20 +289,20 @@ fun Jogo(nivel: String, navController: NavController) {
                         Divider(
                             color = Color(0xFF005B7F), // Color of the line
                             thickness = 10.dp,    // Thickness of the line
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(vertical = 1.dp)
                         )
                         Text(
                             text = respostaUsuario.joinToString(" "),
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color(0xFF136C1A),
                             fontFamily = customFontFamily,
-                            fontSize = 50.sp
+                            fontSize = 25.sp
                         )
                         // Divider to create a line separator
                         Divider(
                             color = Color(0xFF005B7F), // Color of the line
                             thickness = 10.dp,    // Thickness of the line
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(vertical = 1.dp)
                         )
                         LazyVerticalGrid(
                             columns = GridCells.Adaptive(100.dp),
@@ -273,6 +311,7 @@ fun Jogo(nivel: String, navController: NavController) {
                             items(palavrasEmbaralhadas) { palavra ->
                                 Button(
                                     onClick = {
+                                        playStopSound(R.raw.button_pressed, context)
                                         if (palavra !in respostaUsuario) {
                                             respostaUsuario = respostaUsuario + palavra
                                         }
@@ -290,12 +329,17 @@ fun Jogo(nivel: String, navController: NavController) {
                         }
                     }
 
-                    Column (modifier = Modifier.fillMaxWidth()){
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Button(
                             onClick = {
                                 if (respostaUsuario.joinToString(" ") == fraseCorreta) {
-                                    completado = true
-                                    mostrarPopup = true
+                                    if (fraseAtualIndex == frases.lastIndex) {
+                                        completado = true
+                                        mostrarPopup = true
+                                    } else {
+                                        fraseAtualIndex++
+                                        respostaUsuario = emptyList()
+                                    }
                                 } else {
                                     Toast.makeText(
                                         context,
@@ -304,7 +348,9 @@ fun Jogo(nivel: String, navController: NavController) {
                                     ).show()
                                 }
                             },
-                            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF136C1A),
                                 contentColor = Color.White
@@ -317,7 +363,9 @@ fun Jogo(nivel: String, navController: NavController) {
                             onClick = {
                                 respostaUsuario = emptyList()
                             },
-                            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF99812A),
                                 contentColor = Color.White
@@ -342,14 +390,17 @@ fun Jogo(nivel: String, navController: NavController) {
             }
         }
     }
-
-    // Exibir popup ao completar o nível
     if (mostrarPopup) {
+        playStopSound(R.raw.whooo, context)
+        ConfettiRain() // Chuva de confetes no fundo
+
         AlertDialog(
             onDismissRequest = { mostrarPopup = false },
             containerColor = Color(0xFFA1B8CC),
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    playStopSound(R.raw.whooo, context)
+
                     Icon(
                         painter = painterResource(id = R.mipmap.ic_festa), // Substitua pelo ID real do recurso do ícone
                         contentDescription = "Ícone de festa",
@@ -386,7 +437,8 @@ fun Jogo(nivel: String, navController: NavController) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF136C1A),
                         contentColor = Color.White
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("${translations["ir_niveis"]}")
                 }
@@ -397,7 +449,8 @@ fun Jogo(nivel: String, navController: NavController) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF8E1213),
                         contentColor = Color.White
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("${translations["cancel_button"]}")
                 }
