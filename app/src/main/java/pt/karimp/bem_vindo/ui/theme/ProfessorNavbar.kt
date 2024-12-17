@@ -11,6 +11,8 @@ import pt.karimp.bem_vindo.R // Certifique-se de usar o caminho correto para o r
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.firestore.AggregateField.count
+import pt.karimp.bem_vindo.utils.sendAlunosSemProfessorNotification
 import pt.karimp.bem_vindo.utils.sendNewMessageNotification
 import pt.karimp.bem_vindo.utils.sendUnmarkedClassNotification
 import pt.karimp.bem_vindo.utils.sendmarkedClassNotification
@@ -33,10 +35,27 @@ fun getmarkedProfessorClasses(userId: String, onClassesCountChanged: (Int) -> Un
             println("Error getting unrmarked classes: ${exception.message}")
         }
 }
+fun getAlunosSemProfessor(onAlunosCountChanged: (Int) -> Unit) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Obtenha as mensagens não lidas para o usuário conectado
+    firestore.collection("users")
+        .whereEqualTo("professor", "")
+        .get()
+        .addOnSuccessListener { documents ->
+            // Contabiliza as mensagens não lidas
+            val alunosCount = documents.size()
+            onAlunosCountChanged(alunosCount)
+        }
+        .addOnFailureListener { exception ->
+            println("Error getting unrmarked classes: ${exception.message}")
+        }
+}
 
 @Composable
 fun ProfessorNavbar(navController: NavController, userId: String) {
-    var unreadMessagesCount by remember { mutableStateOf(0)}
+    var alunosCount by remember { mutableStateOf(0)}
+
     var unmarkedClass by remember { mutableStateOf(0)}
     val context = LocalContext.current
     // Chama a função para buscar mensagens não lidas sempre que o userId mudar
@@ -48,6 +67,14 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                 sendmarkedClassNotification(context)
             }
         }
+        getAlunosSemProfessor { count ->
+            alunosCount = count
+            if (alunosCount > 0) {
+                // Dispara a notificação se houver novas aulas com presença nao marcada
+                sendAlunosSemProfessorNotification(context)
+            }
+        }
+
     }
     NavigationBar(
         containerColor = Color(0xFFA1B8CC), // Azul inspirado nos azulejos portugueses
@@ -62,6 +89,11 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                     modifier = Modifier.size(50.dp), // Tamanho do ícone ajustado
                     tint = Color.Unspecified // Desativa a tintagem para preservar a cor original da imagem
                 )
+                if (unmarkedClass > 0) {
+                    Badge {
+                        Text(text = unmarkedClass.toString())
+                    }
+                }
             },
             selected = false, // Atualize a lógica para seleção dinâmica
             onClick = { navController.navigate("escolhaAlunos") },

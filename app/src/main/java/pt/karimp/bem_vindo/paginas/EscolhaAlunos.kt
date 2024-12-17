@@ -137,8 +137,15 @@ fun EscolhaAlunos(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.ic_checkbox),
+                    contentDescription = "Aluno",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.padding(8.dp)
+                )
                 if (alunosSemProfessor.isEmpty()) {
                     Text(
                         text = "Não existem alunos sem professor",
