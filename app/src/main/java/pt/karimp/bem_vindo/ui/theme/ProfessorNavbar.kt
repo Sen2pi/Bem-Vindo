@@ -69,10 +69,6 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
         }
         getAlunosSemProfessor { count ->
             alunosCount = count
-            if (alunosCount > 0) {
-                // Dispara a notificação se houver novas aulas com presença nao marcada
-                sendAlunosSemProfessorNotification(context)
-            }
         }
 
     }
