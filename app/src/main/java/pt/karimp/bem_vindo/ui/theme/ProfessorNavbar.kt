@@ -62,11 +62,6 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                     modifier = Modifier.size(50.dp), // Tamanho do ícone ajustado
                     tint = Color.Unspecified // Desativa a tintagem para preservar a cor original da imagem
                 )
-                if (unmarkedClass > 0) {
-                    Badge {
-                        Text(text = unmarkedClass.toString())
-                    }
-                }
             },
             selected = false, // Atualize a lógica para seleção dinâmica
             onClick = { navController.navigate("escolhaAlunos") },
@@ -119,9 +114,9 @@ fun ProfessorNavbar(navController: NavController, userId: String) {
                     modifier = Modifier.size(50.dp),
                     tint = Color.Unspecified
                 )
-                if (unreadMessagesCount > 0) {
+                if (unmarkedClass > 0) {
                     Badge {
-                        Text(text = unreadMessagesCount.toString())
+                        Text(text = unmarkedClass.toString())
                     }
                 }
             },

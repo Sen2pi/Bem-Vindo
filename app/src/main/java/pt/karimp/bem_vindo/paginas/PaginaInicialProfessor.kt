@@ -232,6 +232,16 @@ fun PaginaInicialProfessor(navController: NavController) {
                                         }
                                     }
                                 }
+                                IconButton(onClick = {
+                                    navController.navigate("markClass/${alunoDocId}")
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.mipmap.ic_naula),
+                                        contentDescription = "Selecionar Aluno",
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
                             }
                         }
                     }

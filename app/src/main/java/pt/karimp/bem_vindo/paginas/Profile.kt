@@ -28,6 +28,7 @@ import pt.karimp.bem_vindo.API.getTranslations
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
+import pt.karimp.bem_vindo.ui.theme.ProfessorNavbar
 
 @Composable
 fun Profile(navController: NavController) {
@@ -124,7 +125,7 @@ fun Profile(navController: NavController) {
                 }
             }
         },
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        bottomBar = { if(userData?.tipo == "Professor") ProfessorNavbar(navController = navController, currentUserDocumentId) else BottomNavBar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Image(

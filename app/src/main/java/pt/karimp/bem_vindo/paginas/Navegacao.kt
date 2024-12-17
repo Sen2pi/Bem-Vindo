@@ -34,6 +34,11 @@ fun Navegacao() {
         composable("darNotas") { DarNotas(navController) }
         composable("agendaProfessor") { AgendaProfessor(navController) }
 
+        composable("markClass/{alunoId}") { backStackEntry ->
+            val alunoId = backStackEntry.arguments?.getString("alunoId")
+            MarkClassPage(navController, alunoId.toString())
+        }
+
     }
 }
 

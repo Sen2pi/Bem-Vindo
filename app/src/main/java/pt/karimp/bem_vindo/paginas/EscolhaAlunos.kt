@@ -31,6 +31,7 @@ import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
 import pt.karimp.bem_vindo.ui.theme.ProfessorNavbar
+import pt.karimp.bem_vindo.utils.formatTimestamp
 
 @Composable
 fun EscolhaAlunos(navController: NavController) {
@@ -138,6 +139,14 @@ fun EscolhaAlunos(navController: NavController) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
+                if (alunosSemProfessor.isEmpty()) {
+                    Text(
+                        text = "Não existem alunos sem professor",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color(0xFF005B7F)
+                    )
+                }
                 alunosSemProfessor.forEach { aluno ->
                     Row(
                         modifier = Modifier

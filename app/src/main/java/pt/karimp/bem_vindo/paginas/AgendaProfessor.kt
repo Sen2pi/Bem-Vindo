@@ -29,6 +29,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.CalendarContract
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -39,6 +40,7 @@ import pt.karimp.bem_vindo.R
 import pt.karimp.bem_vindo.models.Aula
 import pt.karimp.bem_vindo.models.User
 import pt.karimp.bem_vindo.ui.theme.BottomNavBar
+import pt.karimp.bem_vindo.ui.theme.ProfessorNavbar
 import pt.karimp.bem_vindo.utils.formatTimestamp
 import java.time.LocalDate
 import java.time.ZoneId
@@ -51,9 +53,7 @@ fun AgendaProfessor(navController: NavController) {
     val currentUser = auth.currentUser
     val userEmail = FirebaseAuth.getInstance().currentUser?.email
     var aulas by remember { mutableStateOf<List<Aula>>(emptyList()) }
-    var loading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var isEditing by remember { mutableStateOf(false) }
+
     var userData by remember { mutableStateOf<User?>(null) }
     var currentUserDocumentId by remember { mutableStateOf("") }
     var selectedLanguage by remember { mutableStateOf("fr") } // Idioma inicial em Francês
@@ -129,35 +129,16 @@ fun AgendaProfessor(navController: NavController) {
 
             try {
                 val userDocSnapshot =
-                    db.collection("users").whereEqualTo("email", currentUser.email).get().await()
+                    db.collection("users").whereEqualTo("email", userEmail).get().await()
                 if (!userDocSnapshot.isEmpty) {
                     val userDoc = userDocSnapshot.documents.first()
                     currentUserDocumentId = userDoc.id
-                    val userType = userDoc.getString("tipo") ?: ""
-
-                    if (userType == "Aluno") {
-
-                        db.collection("users")
-                            .whereEqualTo("email", userEmail)
-                            .get()
-                            .addOnSuccessListener { querySnapshot ->
-                                if (!querySnapshot.isEmpty) {
-                                    val document = querySnapshot.documents.first()
-                                    userData = document.toObject(User::class.java)
-                                } else {
-                                    error = "Usuário não encontrado"
-                                }
-                                loading = false
-                            }
-                            .addOnFailureListener {
-                                error = "Erro ao carregar dados"
-                                loading = false
-                            }
-                        // Carregar aulas do Firestore
-                        val aulasSnapshot = db.collection("aulas").whereEqualTo("professor", currentUserDocumentId).get().await()
-                        aulas = aulasSnapshot.documents.mapNotNull { it.toObject(Aula::class.java) }
-
-                    }
+                    userData = userDoc.toObject(User::class.java)
+                    // Carregar aulas do Firestore
+                    val aulasSnapshot =
+                        db.collection("aulas").whereEqualTo("professor", currentUserDocumentId)
+                            .get().await()
+                    aulas = aulasSnapshot.documents.mapNotNull { it.toObject(Aula::class.java) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -166,9 +147,12 @@ fun AgendaProfessor(navController: NavController) {
     }
     Scaffold(
         topBar = {
-            Row (modifier = Modifier
-                .fillMaxWidth().background(color = Color(0xFFA1B8CC)),
-                horizontalArrangement = Arrangement.Center){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFA1B8CC)),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Image(
                     painter = painterResource(id = R.mipmap.logo_final1),
                     contentDescription = null,
@@ -215,10 +199,10 @@ fun AgendaProfessor(navController: NavController) {
                 }
             }
         },
-        bottomBar = { BottomNavBar(navController = navController, currentUserDocumentId) },
+        bottomBar = { ProfessorNavbar(navController = navController, currentUserDocumentId) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        if(userData?.professor == ""){
+        if (userData?.professor == "") {
             navController.navigate("semprof")
         }
         Image(
@@ -278,10 +262,21 @@ fun AgendaProfessor(navController: NavController) {
                             color = Color(0xFF005B7F),
                             modifier = Modifier.padding(top = 16.dp)
                         )
-
+                        Divider(
+                            color = Color(0xFF005B7F), // Color of the line
+                            thickness = 2.dp,    // Thickness of the line
+                        )
                         LazyColumn() {
                             items(aulas.size) { index ->
                                 val aula = aulas[index]
+                                var alunoData by remember { mutableStateOf<User?>(null) }
+                                db.collection("users").document(aula.aluno).get()
+                                    .addOnSuccessListener { querySnapshot ->
+                                        if (querySnapshot.exists()) {
+                                            alunoData = querySnapshot.toObject(User::class.java)
+                                        }
+                                    }
+
                                 if (aula.dataEHora.toDate().toInstant()
                                         .atZone(ZoneId.systemDefault())
                                         .toLocalDate() == LocalDate.now()
@@ -297,15 +292,23 @@ fun AgendaProfessor(navController: NavController) {
                                                 .padding(start = 15.dp, end = 15.dp)
                                         ) {
                                             Text(
-                                                text = "${translations["aula"]} ${aula.dataEHora.toDate().toInstant()
-                                                    .atZone(ZoneId.systemDefault())
-                                                    .toLocalTime().getHour()}:00",
+                                                text = "${alunoData?.nome}",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 18.sp,
+                                                color = Color.Blue
+                                            )
+                                            Text(
+                                                text = "${translations["aula"]} ${
+                                                    aula.dataEHora.toDate().toInstant()
+                                                        .atZone(ZoneId.systemDefault())
+                                                        .toLocalTime().getHour()
+                                                }:00",
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 20.sp,
                                                 color = Color(0xFF005B7F)
                                             )
                                             Text(
-                                                text = "${translations["nivel"]!!}: " + "${if(aula.nivel == "1" ) translations["basico"] else if(aula.nivel == "2" ) translations["iniciante"] else if(aula.nivel == "3" ) translations["avancado"] else if(aula.nivel == "4" ) translations["niv_mundial"] else if(aula.nivel == "5" ) translations["professional"] else translations["desconhecido"]}",
+                                                text = "${translations["nivel"]!!}: " + "${if (aula.nivel == "1") translations["basico"] else if (aula.nivel == "2") translations["iniciante"] else if (aula.nivel == "3") translations["avancado"] else if (aula.nivel == "4") translations["niv_mundial"] else if (aula.nivel == "5") translations["professional"] else translations["desconhecido"]}",
                                                 fontSize = 18.sp,
                                                 color = Color(0xFF005B7F)
                                             )
@@ -342,13 +345,13 @@ fun AgendaProfessor(navController: NavController) {
                                                     } catch (e: Exception) {
                                                     }
                                                 }
-                                                navController.navigate("agenda")
+                                                navController.navigate("agendaProfessor")
                                             },
                                             modifier = Modifier.size(50.dp)
                                         ) {
                                             Icon(
                                                 painter = painterResource(
-                                                    id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty
+                                                    id = if (aula.presente == true) R.mipmap.ic_presenca else R.mipmap.ic_presenca_empty
                                                 ),
                                                 contentDescription = "Marcar Presença",
                                                 tint = Color.Unspecified,
@@ -358,7 +361,10 @@ fun AgendaProfessor(navController: NavController) {
 
                                     }
                                 }
-
+                                Divider(
+                                    color = Color(0xFF005B7F), // Color of the line
+                                    thickness = 2.dp,    // Thickness of the line
+                                )
                             }
                         }
                     }
@@ -371,9 +377,19 @@ fun AgendaProfessor(navController: NavController) {
                     ), // Cantos arredondados)
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+                    LazyColumn(modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)) {
+                        aulas = aulas.sortedBy { dataEHora -> dataEHora.dataEHora }
                         items(aulas.size) { index ->
                             val aula = aulas[index]
+                            var alunoData by remember { mutableStateOf<User?>(null) }
+                            db.collection("users").document(aula.aluno).get()
+                                .addOnSuccessListener { querySnapshot ->
+                                    if (querySnapshot.exists()) {
+                                        alunoData = querySnapshot.toObject(User::class.java)
+                                    }
+                                }
                             if (aula.dataEHora.toDate().toInstant()
                                     .atZone(ZoneId.systemDefault())
                                     .toLocalDate() >= LocalDate.now()
@@ -390,63 +406,122 @@ fun AgendaProfessor(navController: NavController) {
                                             .padding(start = 15.dp, end = 15.dp)
                                     ) {
                                         Text(
+                                            text = "${alunoData?.nome}",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 18.sp,
+                                            color = Color.Blue
+                                        )
+                                        Text(
                                             text = formatTimestamp(aula?.dataEHora),
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 20.sp,
                                             color = Color(0xFF005B7F)
                                         )
                                         Text(
-                                            text = "${translations["nivel"]!!}: " + "${if(aula.nivel == "1" ) translations["basico"] else if(aula.nivel == "2" ) translations["iniciante"] else if(aula.nivel == "3" ) translations["avancado"] else if(aula.nivel == "4" ) translations["niv_mundial"] else if(aula.nivel == "5" ) translations["professional"] else translations["desconhecido"]}",
+                                            text = "${translations["nivel"]!!}: " + "${if (aula.nivel == "1") translations["basico"] else if (aula.nivel == "2") translations["iniciante"] else if (aula.nivel == "3") translations["avancado"] else if (aula.nivel == "4") translations["niv_mundial"] else if (aula.nivel == "5") translations["professional"] else translations["desconhecido"]}",
                                             fontSize = 18.sp,
                                             color = Color(0xFF005B7F)
                                         )
-                                        Button(
-                                            onClick = {
-                                                val intent = Intent(Intent.ACTION_INSERT).apply {
-                                                    data = CalendarContract.Events.CONTENT_URI
-                                                    putExtra(
-                                                        CalendarContract.Events.TITLE,
-                                                        "Cours Bem-Vindo Niveau: ${aula.nivel}"
-                                                    ) // Título do evento
-                                                    putExtra(
-                                                        CalendarContract.Events.DESCRIPTION,
-                                                        "Cours Bem-Vindo Niveau: ${aula.nivel}" // Descrição do evento
+
+                                            Button(
+                                                onClick = {
+                                                    val intent =
+                                                        Intent(Intent.ACTION_INSERT).apply {
+                                                            data =
+                                                                CalendarContract.Events.CONTENT_URI
+                                                            putExtra(
+                                                                CalendarContract.Events.TITLE,
+                                                                "Cours Bem-Vindo Niveau: ${aula.nivel}"
+                                                            ) // Título do evento
+                                                            putExtra(
+                                                                CalendarContract.Events.DESCRIPTION,
+                                                                "Cours Bem-Vindo Niveau: ${aula.nivel}" // Descrição do evento
+                                                            )
+                                                            putExtra(
+                                                                CalendarContract.Events.EVENT_LOCATION,
+                                                                "Online"
+                                                            ) // Localização do evento
+                                                            // Converter a Timestamp do Firebase para milissegundos
+                                                            putExtra(
+                                                                CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                                                                aula.dataEHora.toDate().time // Hora de início em milissegundos
+                                                            )
+                                                            // Opcional: Definir duração do evento (2 horas neste exemplo)
+                                                            putExtra(
+                                                                CalendarContract.EXTRA_EVENT_END_TIME,
+                                                                aula.dataEHora.toDate().time + 2 * 60 * 60 * 1000 // Hora de término
+                                                            )
+                                                        }
+                                                    context.startActivity(intent) // Iniciar a Intent
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color(0xFF005B7F),
+                                                )
+                                            ) {
+                                                Row {
+                                                    Icon(
+                                                        painter = painterResource(id = R.mipmap.ic_calendar),
+                                                        contentDescription = "Adicionar ao Calendário",
+                                                        tint = Color.Unspecified,
+                                                        modifier = Modifier.size(20.dp)
                                                     )
-                                                    putExtra(
-                                                        CalendarContract.Events.EVENT_LOCATION,
-                                                        "Online"
-                                                    ) // Localização do evento
-                                                    // Converter a Timestamp do Firebase para milissegundos
-                                                    putExtra(
-                                                        CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                                                        aula.dataEHora.toDate().time // Hora de início em milissegundos
-                                                    )
-                                                    // Opcional: Definir duração do evento (2 horas neste exemplo)
-                                                    putExtra(
-                                                        CalendarContract.EXTRA_EVENT_END_TIME,
-                                                        aula.dataEHora.toDate().time + 2 * 60 * 60 * 1000 // Hora de término
+                                                    Text(
+                                                        text = "       ${translations["calendario"]!!}",
+                                                        fontSize = 16.sp,
+                                                        color = Color.White,
                                                     )
                                                 }
-                                                context.startActivity(intent) // Iniciar a Intent
-                                            },
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Row {
-                                                Icon(
-                                                    painter = painterResource(id = R.mipmap.ic_calendar),
-                                                    contentDescription = "Adicionar ao Calendário",
-                                                    tint = Color.Unspecified,
-                                                    modifier = Modifier.size(20.dp)
-                                                )
-                                                Text(
-                                                    text = "       ${translations["calendario"]!!}",
-                                                    fontSize = 16.sp,
-                                                    color = Color.White,
-                                                )
                                             }
-                                        }
+
+
+
                                     }
                                     Row {
+                                        var showDeleteConfirmation by remember { mutableStateOf(false) }
+                                        // Trash Icon Button at the Bottom
+                                        if (showDeleteConfirmation) {
+                                            AlertDialog(
+                                                onDismissRequest = { showDeleteConfirmation = false },
+                                                title = { Text("Confirmar exclusão") },
+                                                text = { Text("Quer mesmo apagar esta aula?") },
+                                                confirmButton = {
+                                                    TextButton(onClick = { db.collection("aulas")
+                                                        .whereEqualTo("aluno", aula.aluno)
+                                                        .whereEqualTo("dataEHora", aula.dataEHora)
+                                                        .whereEqualTo(
+                                                            "professor",
+                                                            currentUserDocumentId
+                                                        ).get()
+                                                        .addOnSuccessListener { querySnapshot ->
+                                                            if (!querySnapshot.isEmpty) {
+                                                                db.collection("aulas")
+                                                                    .document(querySnapshot.documents.first().id)
+                                                                    .delete()
+                                                            }
+                                                        }
+                                                        navController.navigate("agendaProfessor") }) {
+                                                        Text("Sim")
+                                                    }
+                                                },
+                                                dismissButton = {
+                                                    TextButton(onClick = { showDeleteConfirmation = false }) {
+                                                        Text("Não")
+                                                    }
+                                                }
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                showDeleteConfirmation = true
+                                            }) {
+                                            Icon(
+                                                painter = painterResource(id = R.mipmap.ic_trash),
+                                                contentDescription = "Remover aula",
+                                                tint = Color.Unspecified,
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
                                         IconButton(onClick = {
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 aula.sala.let {
@@ -479,13 +554,13 @@ fun AgendaProfessor(navController: NavController) {
                                                     } catch (e: Exception) {
                                                     }
                                                 }
-                                                navController.navigate("agenda")
+                                                navController.navigate("agendaProfessor")
                                             },
                                             modifier = Modifier.size(50.dp)
                                         ) {
                                             Icon(
                                                 painter = painterResource(
-                                                    id = if (aula.presencaConfirmada == true) R.mipmap.ic_agenda_filled else R.mipmap.ic_agenda_empty
+                                                    id = if (aula.presente == true) R.mipmap.ic_presenca else R.mipmap.ic_presenca_empty
                                                 ),
                                                 contentDescription = "Marcar Presença",
                                                 tint = Color.Unspecified,
