@@ -20,7 +20,8 @@ Este projeto consiste no desenvolvimento de uma aplicação Android utilizando K
 - ✅ Suporte a notificações push para lembrar os usuários sobre aulas e mensagens.
 - ✅ Feedback e avaliação em tempo real durante interações com tutores.
 - ✅Jogos de Aprendizagem interativos.
-- 🔲 Sistemas de notas, progresso e níveis.
+- 🔲 Sistemas de notas
+- ✅ Progresso e níveis, calculos efectuados baseados na pontuacao.
 
 ### Funcionalidades do MVP
 - ✅ Registro de usuários com email e senha.
