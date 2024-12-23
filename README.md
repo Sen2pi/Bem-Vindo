@@ -207,10 +207,20 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 
 ### Página de Login e Registro e Recuperação de Passe
 
+### Página Inicial (Dashboard Aluno / Professor) 
 
-## Página Inicial (Dashboard) 
+### Agenda (Dashboard Aluno / Professor) 
 
+### Escolha de Alunos
 
-## Contribuições
+### Marcar Aula
 
-Se você deseja contribuir com melhorias para este projeto, fique à vontade para criar um fork e submeter um pull request. Se encontrar algum bug ou tiver sugestões, abra uma issue no repositório.
+### Chat Aluno / Professor
+
+### Jogos didaticos
+
+### Perfil 
+
+### Contribuições
+
+Se desejar contribuir com melhorias para este projeto, fique à vontade para criar um fork e submeter um pull request. Se encontrar algum bug ou tiver sugestões, abra uma issue no repositório.
