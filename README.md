@@ -205,17 +205,10 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 
 ## Implementado
 
-### Página de Login e Registro
+### Página de Login e Registro e Recuperação de Passe
 
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20194508.png)
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%20193243.png)
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-02%20193804.png)
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20194521.png)
 
 ## Página Inicial (Dashboard) 
-
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20185931.png)
-![Página de Login](mockups/Captura%20de%20ecrã%202024-12-03%20190200.png)
 
 
 ## Contribuições
