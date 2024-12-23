@@ -206,20 +206,43 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 ## Implementado
 
 ### Página de Login e Registro e Recuperação de Passe
+![Página de Login](mockups/1.png)
+![Página de MAil](mockups/2.png)
+![Página de Registo](mockups/3.png)
 
 ### Página Inicial (Dashboard Aluno / Professor) 
+![Página de Inicio Aluno](mockups/4.png)
+![Página de Inicio Professor](mockups/5.png)
 
 ### Agenda (Dashboard Aluno / Professor) 
+![Página de Inicio](mockups/6.png)
+![Página de Inicio](mockups/7.png)
+![Página de Inicio](mockups/8.png)
 
 ### Escolha de Alunos
+![Escolha do aluno](mockups/19.png)
+![Página de Escolha](mockups/20.png)
 
 ### Marcar Aula
+![MArcar a Aula](mockups/21.png)
+![escolher data](mockups/22.png)
+![MArcar aula](mockups/23.png)
 
 ### Chat Aluno / Professor
+![Página de Inicio](mockups/9.png)
+![Página de Inicio](mockups/10.png)
+![Página de Inicio](mockups/11.png)
+![Página de Inicio](mockups/12.png)
 
 ### Jogos didaticos
+![Página de Inicio](mockups/13.png)
+![Página de Inicio](mockups/14.png)
+![Página de Inicio](mockups/15.png)
+![Página de Inicio](mockups/16.png)
 
 ### Perfil 
+![Página de Escolha](mockups/17.png)
+![Página de Escolha](mockups/18.png)
 
 ### Contribuições
 
