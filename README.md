@@ -169,11 +169,11 @@ O projeto segue a estrutura padrão para um aplicativo Android usando Jetpack Co
 
 ## Como Funciona o Código
 
-1. **Tela de Login (`PaginaDeLogin`)**:
+1. **Ecrã de Login (`PaginaDeLogin`)**:
    - A página de login valida o email e a senha fornecidos e exibe mensagens de erro apropriadas.
    - Ao fazer login com sucesso, o usuário é redirecionado para a página principal (`home`).
 
-2. **Tela de Registro (`PaginaDeRegistro`)**:
+2. **Ecrã de Registro (`PaginaDeRegistro`)**:
    - A página de registro permite que o usuário insira informações como nome, email, senha, etc.
    - Várias validações de campos são feitas antes de permitir o envio do formulário.
    - A conta do usuário é criada no Firebase Authentication após a validação do formulário.
